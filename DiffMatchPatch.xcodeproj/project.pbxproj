@@ -20,8 +20,6 @@
 		3DA64278128DE8C900B33CE9 /* DiffMatchPatchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */; };
 		3DC87026129FF4B6001F602B /* NSString+JavaSubstring.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DC87024129FF4B6001F602B /* NSString+JavaSubstring.m */; };
 		3DEE4C73129D484D00885485 /* NSMutableDictionary+DMPExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DEE4C71129D484D00885485 /* NSMutableDictionary+DMPExtensions.m */; };
-		3DFDB2FA12AEC7700084EFE3 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */; };
-		3DFDB2FB12AEC77E0084EFE3 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */; };
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
@@ -44,7 +42,6 @@
 
 /* Begin PBXFileReference section */
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* DiffMatchPatch_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch_Prefix.pch; sourceTree = "<group>"; };
@@ -72,7 +69,6 @@
 		3DC87024129FF4B6001F602B /* NSString+JavaSubstring.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+JavaSubstring.m"; sourceTree = "<group>"; };
 		3DEE4C70129D484D00885485 /* NSMutableDictionary+DMPExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+DMPExtensions.h"; sourceTree = "<group>"; };
 		3DEE4C71129D484D00885485 /* NSMutableDictionary+DMPExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+DMPExtensions.m"; sourceTree = "<group>"; };
-		3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DiffMatchPatch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -83,7 +79,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D0D3FAB128CBD350093B0C7 /* DiffMatchPatch.framework in Frameworks */,
-				3DFDB2FA12AEC7700084EFE3 /* libstdc++.6.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,7 +96,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D5BBFDF128C416900B8F5FF /* Foundation.framework in Frameworks */,
-				3DFDB2FB12AEC77E0084EFE3 /* libstdc++.6.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,9 +172,7 @@
 		1058C7B2FEA5585E11CA2CBB /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0867D6A5FE840307C02AAC07 /* AppKit.framework */,
 				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
-				3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */,
 			);
 			name = "Other Frameworks";
 			sourceTree = "<group>";
