@@ -158,8 +158,11 @@
 				3DEE4C70129D484D00885485 /* NSMutableDictionary+DMPExtensions.h */,
 				3DEE4C71129D484D00885485 /* NSMutableDictionary+DMPExtensions.m */,
 			);
+			indentWidth = 2;
 			name = Classes;
 			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
 		};
 		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
@@ -185,8 +188,11 @@
 				3DA6416F128DDA3400B33CE9 /* DiffMatchPatchCFUtilities.h */,
 				3DA64170128DDA3400B33CE9 /* DiffMatchPatchCFUtilities.c */,
 			);
+			indentWidth = 2;
 			name = "Other Sources";
 			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
 		};
 		3D510E0F12BEBA44008C7CE7 /* Configurations */ = {
 			isa = PBXGroup;
@@ -195,8 +201,11 @@
 				3D510E1012BEBA44008C7CE7 /* Base.xcconfig */,
 				3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */,
 			);
+			indentWidth = 2;
 			path = Configurations;
 			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
 		};
 		3D5BC0D9128CAA7600B8F5FF /* Tests */ = {
 			isa = PBXGroup;
@@ -208,8 +217,11 @@
 				3D96F43E12AFC76600C3E5C0 /* speedtest_Prefix.pch */,
 				3D96F44912AFC82F00C3E5C0 /* speedtest.m */,
 			);
+			indentWidth = 2;
 			path = Tests;
 			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
 		};
 /* End PBXGroup section */
 
