@@ -41,6 +41,8 @@ Boolean diff_regExMatch(CFStringRef text, const regex_t *re);
 
 CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CFIndex i);
 
+void diff_linesMungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash, CFMutableStringRef chars);
+
 // Utility functions
 CFStringRef diff_CFStringCreateFromUnichar(UniChar ch) {
   CFStringRef c = CFStringCreateWithCharacters(kCFAllocatorDefault, &ch, 1);
@@ -440,6 +442,31 @@ CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CF
   return halfMatchIArray;
 }
 
+void diff_linesMungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash, CFMutableStringRef chars) {
+  #define diff_UniCharMax (~(UniChar)0x00)
+  
+  CFIndex hash;
+  CFNumberRef hashNumber;
+  
+  if (CFDictionaryContainsKey(tokenHash, token)) {
+    CFDictionaryGetValueIfPresent(tokenHash, token, (const void **)&hashNumber);
+    CFNumberGetValue(hashNumber, kCFNumberCFIndexType, &hash);
+    const UniChar hashChar = (UniChar)hash;
+    CFStringAppendCharacters(chars, &hashChar, 1);
+  } else {
+    CFArrayAppendValue(tokenArray, token);
+    hash = CFArrayGetCount(tokenArray) - 1;
+    check_string(hash <= diff_UniCharMax, "Hash value has exceeded UniCharMax!");
+    hashNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &hash);
+    CFDictionaryAddValue(tokenHash, token, hashNumber);
+    CFRelease(hashNumber);
+    const UniChar hashChar = (UniChar)hash;
+    CFStringAppendCharacters(chars, &hashChar, 1);
+  }
+  
+  #undef diff_UniCharMax
+}
+
 /**
  * Split a text into a list of strings.   Reduce the texts to a CFStringRef of
  * hashes where each Unicode character represents one line.
@@ -449,7 +476,6 @@ CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CF
  * @return Encoded CFStringRef.
  */
 CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef lineArray, CFMutableDictionaryRef lineHash) {
-  #define diff_UniCharMax (~(UniChar)0x00)
   #define lineStart lineStartRange.location
   #define lineEnd lineEndRange.location
 
@@ -461,8 +487,6 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
   CFMutableStringRef chars = CFStringCreateMutable(kCFAllocatorDefault, 0);
 
   CFIndex textLength = CFStringGetLength(text);
-  CFIndex hash;
-  CFNumberRef hashNumber;
 
   // Walk the text, pulling out a Substring for each line.
   // CFStringCreateArrayBySeparatingStrings(kCFAllocatorDefault, text, CFSTR("\n")) would temporarily double our memory footprint.
@@ -479,29 +503,77 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
     line = diff_CFStringCreateJavaSubstring(text, lineStart, lineEnd + 1);
     lineStart = lineEnd + 1;
 
-    if (CFDictionaryContainsKey(lineHash, line)) {
-      CFDictionaryGetValueIfPresent(lineHash, line, (const void **)&hashNumber);
-      CFNumberGetValue(hashNumber, kCFNumberCFIndexType, &hash);
-      const UniChar hashChar = (UniChar)hash;
-      CFStringAppendCharacters(chars, &hashChar, 1);
-    } else {
-      CFArrayAppendValue(lineArray, line);
-      hash = CFArrayGetCount(lineArray) - 1;
-      check_string(hash <= diff_UniCharMax, "Hash value has exceeded UniCharMax!");
-      hashNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &hash);
-      CFDictionaryAddValue(lineHash, line, hashNumber);
-      CFRelease(hashNumber);
-      const UniChar hashChar = (UniChar)hash;
-      CFStringAppendCharacters(chars, &hashChar, 1);
-    }
+    diff_linesMungeHelper(line, lineArray, lineHash, chars);
 
     CFRelease(line);
   }
+  
   return chars;
 
   #undef diff_UniCharMax
   #undef lineStart
   #undef lineEnd
+}
+
+/**
+ * Split a text into a list of strings.   Reduce the texts to a CFStringRef of
+ * hashes where where each Unicode character represents one word (or boundary between words).
+ * @param text CFString to encode.
+ * @param lineArray CFMutableArray of unique strings.
+ * @param lineHash Map of strings to indices.
+ * @return Encoded CFStringRef.
+ */
+CFStringRef diff_linesToWordsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash) {
+  
+  CFStringRef token;
+  CFMutableStringRef chars = CFStringCreateMutable(kCFAllocatorDefault, 0);
+
+  CFIndex textLength = CFStringGetLength(text);
+  
+  //CFLocaleRef currentLocale = CFLocaleCopyCurrent();
+
+  CFOptionFlags options = kCFStringTokenizerUnitWord;
+  CFRange tokenizerRange = CFRangeMake(0, textLength);
+  
+  // The locale parameter is ignored for tokenizing by words
+  CFStringTokenizerRef tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, text, tokenizerRange, options, NULL);
+  
+  //CFRelease(currentLocale);
+  
+  // Set tokenizer to the start of the string. 
+  CFStringTokenizerTokenType mask = CFStringTokenizerGoToTokenAtIndex(tokenizer, 0);
+
+  // Walk the text, pulling out a substring for each word (or boundary between words).
+  CFRange tokenRange;
+  CFIndex prevTokenEnd = 0;
+  while (mask != kCFStringTokenizerTokenNone) {
+    tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
+    
+    if (tokenRange.location > prevTokenEnd) {
+      token = diff_CFStringCreateJavaSubstring(text, prevTokenEnd, tokenRange.location);
+      diff_linesMungeHelper(token, tokenArray, tokenHash, chars);
+      CFRelease(token);
+    }
+    
+    token = diff_CFStringCreateSubstring(text, tokenRange.location, tokenRange.length);
+    diff_linesMungeHelper(token, tokenArray, tokenHash, chars);
+    CFRelease(token);
+    
+    prevTokenEnd = tokenRange.location + tokenRange.length;
+    
+    mask = CFStringTokenizerAdvanceToNextToken(tokenizer);
+  }
+  
+  if (prevTokenEnd <= textLength - 1) {
+    token = diff_CFStringCreateJavaSubstring(text, prevTokenEnd, textLength);
+    diff_linesMungeHelper(token, tokenArray, tokenHash, chars);
+    CFRelease(token);
+  }
+  
+  CFRelease(tokenizer);
+
+  return chars;
+  
 }
 
 /**

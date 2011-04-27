@@ -185,6 +185,25 @@
   [dmp release];
 }
 
+- (void)test_diff_linesToWordsTest {
+  DiffMatchPatch *dmp = [DiffMatchPatch new];
+  NSArray *result;
+  
+  // Convert words down to characters.
+  NSMutableArray *tmpVector = [NSMutableArray array];  // array of NSString objects
+  [tmpVector addObject:@""];
+  [tmpVector addObject:@"alpha"];
+  [tmpVector addObject:@" "];
+  [tmpVector addObject:@"beta"];
+  [tmpVector addObject:@"\n"];
+  result = [dmp diff_linesToWordsForFirstString:@"alpha beta alpha\n" andSecondString:@"beta alpha beta\n"];
+  STAssertEqualObjects(@"\001\002\003\002\001\004", [result objectAtIndex:0], @"Convert words down to characters #1");
+  STAssertEqualObjects(@"\003\002\001\002\003\004", [result objectAtIndex:1], @"Convert words down to characters #2");
+  STAssertEqualObjects(tmpVector, (NSArray *)[result objectAtIndex:2], @"Convert words down to characters #3");
+  
+  [dmp release];
+}
+
 - (void)test_diff_charsToLinesTest {
   DiffMatchPatch *dmp = [DiffMatchPatch new];
 

@@ -878,6 +878,42 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 }
 
 /**
+ * Split two texts into a list of strings.  Reduce the texts to a string of
+ * hashes where each Unicode character represents one word (or boundary between words).
+ * @param text1 First NSString.
+ * @param text2 Second NSString.
+ * @return Three element NSArray, containing the encoded text1, the
+ *     encoded text2 and the NSMutableArray of unique strings. The zeroth element
+ *     of the NSArray of unique strings is intentionally blank.
+ */
+- (NSArray *)diff_linesToWordsForFirstString:(NSString *)text1
+                             andSecondString:(NSString *)text2;
+{
+  NSMutableArray *lineArray = [NSMutableArray array]; // NSString objects
+  NSMutableDictionary *lineHash = [NSMutableDictionary dictionary]; // keys: NSString, values:NSNumber
+  // e.g. [lineArray objectAtIndex:4] == "Hello\n"
+  // e.g. [lineHash objectForKey:"Hello\n"] == 4
+
+  // "\x00" is a valid character, but various debuggers don't like it.
+  // So we'll insert a junk entry to avoid generating a nil character.
+  [lineArray addObject:@""];
+
+  NSString *words1 = (NSString *)diff_linesToWordsMungeCFStringCreate((CFStringRef)text1,
+                                                                      (CFMutableArrayRef)lineArray,
+                                                                      (CFMutableDictionaryRef)lineHash);
+  NSString *words2 = (NSString *)diff_linesToWordsMungeCFStringCreate((CFStringRef)text2,
+                                                                      (CFMutableArrayRef)lineArray,
+                                                                      (CFMutableDictionaryRef)lineHash);
+
+  NSArray *result = [NSArray arrayWithObjects:words1, words2, lineArray, nil];
+
+  [words1 release];
+  [words2 release];
+
+  return result;
+}
+
+/**
  * Rehydrate the text in a diff from an NSString of line hashes to real lines
  * of text.
  * @param NSArray of Diff objects.
