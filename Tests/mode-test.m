@@ -82,16 +82,24 @@ NSString * diff_stringForURL(NSURL *aURL) {
   return [string autorelease];
 }
 
+
+typedef enum {
+  DIFF_DEFAULT_MODE = 1,
+  DIFF_LINE_MODE = 2,
+  DIFF_WORD_MODE = 3
+} Diff_Mode;
+
+
 int main (int argc, const char * argv[]) {
   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	
 	if ([[[NSProcessInfo processInfo] arguments] count] < 3) {
-		fprintf(stderr, "usage: %s <txt1> <txt2>\n",
+		fprintf(stderr, "usage: %s <txt1> <txt2> [default|line|word]\n",
             [[[NSProcessInfo processInfo] processName] UTF8String]);
 		[pool drain];
 		return EXIT_FAILURE;
 	}
-	
+
 	NSString *rawFilePath1 = [[[NSProcessInfo processInfo] arguments] objectAtIndex:1];
 	NSString *rawFilePath2 = [[[NSProcessInfo processInfo] arguments] objectAtIndex:2];
 
@@ -101,7 +109,32 @@ int main (int argc, const char * argv[]) {
   NSString *text1 = diff_stringForURL(fileURL1);
   NSString *text2 = diff_stringForURL(fileURL2);
   
-  NSMutableArray *diffs = diff_defaultMode(text1, text2);
+  NSMutableArray *diffs;
+  NSUInteger mode = DIFF_DEFAULT_MODE;
+  
+  if ([[[NSProcessInfo processInfo] arguments] count] >= 4) {
+    NSString *modeString = [[[NSProcessInfo processInfo] arguments] objectAtIndex:3];
+    
+    if ([modeString isEqualToString:@"line"]) {
+      mode = DIFF_LINE_MODE;
+    }
+    else if ([modeString isEqualToString:@"word"]) {
+      mode = DIFF_WORD_MODE;
+    }
+  }
+  
+  switch (mode) {
+    case DIFF_LINE_MODE:
+      diffs = diff_lineMode(text1, text2);
+      break;
+    case DIFF_WORD_MODE:
+      diffs = diff_wordMode(text1, text2);
+      break;
+    default:
+      diffs = diff_defaultMode(text1, text2);
+      break;
+  }
+  
   NSLog(@"%@", [diffs description]);
   
   [pool drain];
