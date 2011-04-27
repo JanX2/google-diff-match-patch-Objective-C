@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D03489B135F75770051FE16 /* mode-test.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D03489A135F75770051FE16 /* mode-test.m */; };
+		3D0348CA135F7AEC0051FE16 /* DiffMatchPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */; };
+		3D0348CB135F7AEC0051FE16 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
 		3D08D25412A71B9C007A5316 /* NSString+UnicharUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D08D25212A71B9C007A5316 /* NSString+UnicharUtilities.m */; };
 		3D0D3FAB128CBD350093B0C7 /* DiffMatchPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */; };
 		3D5BBFDF128C416900B8F5FF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
@@ -24,6 +27,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3D0348CC135F7B020051FE16 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* DiffMatchPatch */;
+			remoteInfo = DiffMatchPatch;
+		};
 		3D96F3B812AFC6CD00C3E5C0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -45,6 +55,8 @@
 		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* DiffMatchPatch_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch_Prefix.pch; sourceTree = "<group>"; };
+		3D03488E135F75460051FE16 /* mode-test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mode-test"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D03489A135F75770051FE16 /* mode-test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "mode-test.m"; sourceTree = "<group>"; };
 		3D08D25112A71B9C007A5316 /* NSString+UnicharUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UnicharUtilities.h"; sourceTree = "<group>"; };
 		3D08D25212A71B9C007A5316 /* NSString+UnicharUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UnicharUtilities.m"; sourceTree = "<group>"; };
 		3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Base+SnowLeopard.xcconfig"; sourceTree = "<group>"; };
@@ -74,6 +86,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3D03488C135F75460051FE16 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D0348CA135F7AEC0051FE16 /* DiffMatchPatch.framework in Frameworks */,
+				3D0348CB135F7AEC0051FE16 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3D5BC0AC128CA8E200B8F5FF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -108,6 +129,7 @@
 				8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */,
 				3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.octest */,
 				3D96F3A212AFC68900C3E5C0 /* speedtest */,
+				3D03488E135F75460051FE16 /* mode-test */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -216,6 +238,7 @@
 				3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */,
 				3D96F43E12AFC76600C3E5C0 /* speedtest_Prefix.pch */,
 				3D96F44912AFC82F00C3E5C0 /* speedtest.m */,
+				3D03489A135F75770051FE16 /* mode-test.m */,
 			);
 			indentWidth = 2;
 			path = Tests;
@@ -237,6 +260,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		3D03488D135F75460051FE16 /* mode-test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D034899135F75640051FE16 /* Build configuration list for PBXNativeTarget "mode-test" */;
+			buildPhases = (
+				3D03488B135F75460051FE16 /* Sources */,
+				3D03488C135F75460051FE16 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3D0348CD135F7B020051FE16 /* PBXTargetDependency */,
+			);
+			name = "mode-test";
+			productName = "mode-test";
+			productReference = 3D03488E135F75460051FE16 /* mode-test */;
+			productType = "com.apple.product-type.tool";
+		};
 		3D5BC0AE128CA8E200B8F5FF /* DiffMatchPatchTest */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3D5BC0B3128CA8E500B8F5FF /* Build configuration list for PBXNativeTarget "DiffMatchPatchTest" */;
@@ -315,6 +355,7 @@
 				8DC2EF4F0486A6940098B216 /* DiffMatchPatch */,
 				3D5BC0AE128CA8E200B8F5FF /* DiffMatchPatchTest */,
 				3D96F3A112AFC68900C3E5C0 /* speedtest */,
+				3D03488D135F75460051FE16 /* mode-test */,
 			);
 		};
 /* End PBXProject section */
@@ -354,6 +395,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3D03488B135F75460051FE16 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D03489B135F75770051FE16 /* mode-test.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3D5BC0AB128CA8E200B8F5FF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -386,6 +435,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3D0348CD135F7B020051FE16 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8DC2EF4F0486A6940098B216 /* DiffMatchPatch */;
+			targetProxy = 3D0348CC135F7B020051FE16 /* PBXContainerItemProxy */;
+		};
 		3D96F3B912AFC6CD00C3E5C0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8DC2EF4F0486A6940098B216 /* DiffMatchPatch */;
@@ -467,6 +521,92 @@
 				GCC_ENABLE_OBJC_GC = supported;
 			};
 			name = Release;
+		};
+		3D034890135F75460051FE16 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "mode-test";
+			};
+			name = Debug;
+		};
+		3D034891135F75460051FE16 /* Debug 10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "mode-test";
+			};
+			name = "Debug 10.6";
+		};
+		3D034892135F75460051FE16 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "mode-test";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		3D034893135F75460051FE16 /* Release 10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "mode-test";
+			};
+			name = "Release 10.6";
 		};
 		3D105A0C12DA601C002111E1 /* Debug 10.6 */ = {
 			isa = XCBuildConfiguration;
@@ -747,6 +887,17 @@
 				3D105A0C12DA601C002111E1 /* Debug 10.6 */,
 				1DEB91B308733DA50010E9CD /* Release */,
 				3D105A1012DA6024002111E1 /* Release 10.6 */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D034899135F75640051FE16 /* Build configuration list for PBXNativeTarget "mode-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D034890135F75460051FE16 /* Debug */,
+				3D034891135F75460051FE16 /* Debug 10.6 */,
+				3D034892135F75460051FE16 /* Release */,
+				3D034893135F75460051FE16 /* Release 10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
