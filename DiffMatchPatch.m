@@ -444,7 +444,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSArray *)diff_halfMatchOfFirstString:(NSString *)text1
                          andSecondString:(NSString *)text2;
 {
-  return [(NSArray *)diff_halfMatchCreate((CFStringRef)text1, (CFStringRef)text2, Diff_Timeout) autorelease];
+  return [NSMakeCollectable(diff_halfMatchCreate((CFStringRef)text1, (CFStringRef)text2, Diff_Timeout)) autorelease];
 }
 
 /**
@@ -461,7 +461,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                           andShortString:(NSString *)shorttext
                                    index:(NSInteger)index;
 {
-  return [((NSArray *)diff_halfMatchICreate((CFStringRef)longtext, (CFStringRef)shorttext, (CFIndex)index)) autorelease];
+  return [NSMakeCollectable(diff_halfMatchICreate((CFStringRef)longtext, (CFStringRef)shorttext, (CFIndex)index)) autorelease];
 }
 
 /**
@@ -517,7 +517,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   longtext = shorttext = nil;  // Garbage collect: prevent abandoned memory.
 
   // Check to see if the problem can be split in two.
-  NSArray *hm = [(NSArray *)diff_halfMatchCreate((CFStringRef)text1, (CFStringRef)text2, Diff_Timeout) autorelease];
+  NSArray *hm = [NSMakeCollectable(diff_halfMatchCreate((CFStringRef)text1, (CFStringRef)text2, Diff_Timeout)) autorelease];
   if (hm != nil) {
     NSAutoreleasePool *splitPool = [NSAutoreleasePool new];
     // A half-match was found, sort out the return data.
@@ -638,9 +638,9 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                                  lineArray:(NSMutableArray *)lineArray
                                   lineHash:(NSMutableDictionary *)lineHash;
 {
-  return [((NSString *)diff_linesToCharsMungeCFStringCreate((CFStringRef)text,
-                                                            (CFMutableArrayRef)lineArray,
-                                                            (CFMutableDictionaryRef)lineHash)) autorelease];
+  return [NSMakeCollectable(diff_linesToCharsMungeCFStringCreate((CFStringRef)text,
+                                                                 (CFMutableArrayRef)lineArray,
+                                                                 (CFMutableDictionaryRef)lineHash)) autorelease];
 }
 
 /**
@@ -862,13 +862,13 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   // So we'll insert a junk entry to avoid generating a nil character.
   [lineArray addObject:@""];
 
-  NSString *chars1 = (NSString *)diff_linesToCharsMungeCFStringCreate((CFStringRef)text1,
-                                                                      (CFMutableArrayRef)lineArray,
-                                                                      (CFMutableDictionaryRef)lineHash);
-  NSString *chars2 = (NSString *)diff_linesToCharsMungeCFStringCreate((CFStringRef)text2,
-                                                                      (CFMutableArrayRef)lineArray,
-                                                                      (CFMutableDictionaryRef)lineHash);
-
+  NSString *chars1 = NSMakeCollectable(diff_linesToCharsMungeCFStringCreate((CFStringRef)text1,
+                                                                            (CFMutableArrayRef)lineArray,
+                                                                            (CFMutableDictionaryRef)lineHash));
+  NSString *chars2 = NSMakeCollectable(diff_linesToCharsMungeCFStringCreate((CFStringRef)text2,
+                                                                            (CFMutableArrayRef)lineArray,
+                                                                            (CFMutableDictionaryRef)lineHash));
+  
   NSArray *result = [NSArray arrayWithObjects:chars1, chars2, lineArray, nil];
 
   [chars1 release];

@@ -453,6 +453,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3D510E1012BEBA44008C7CE7 /* Base.xcconfig */;
 			buildSettings = {
+				GCC_ENABLE_OBJC_GC = supported;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_UNINITIALIZED_AUTOS = NO;
 				ONLY_ACTIVE_ARCH = YES;
@@ -463,6 +464,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3D510E1012BEBA44008C7CE7 /* Base.xcconfig */;
 			buildSettings = {
+				GCC_ENABLE_OBJC_GC = supported;
 			};
 			name = Release;
 		};
@@ -470,6 +472,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */;
 			buildSettings = {
+				GCC_ENABLE_OBJC_GC = supported;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_UNINITIALIZED_AUTOS = NO;
 				ONLY_ACTIVE_ARCH = YES;
@@ -551,6 +554,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */;
 			buildSettings = {
+				GCC_ENABLE_OBJC_GC = supported;
 			};
 			name = "Release 10.6";
 		};

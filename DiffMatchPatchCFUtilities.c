@@ -44,7 +44,6 @@ CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CF
 // Utility functions
 CFStringRef diff_CFStringCreateFromUnichar(UniChar ch) {
   CFStringRef c = CFStringCreateWithCharacters(kCFAllocatorDefault, &ch, 1);
-  CFMakeCollectable(c);
   return c;
 }
 
@@ -54,7 +53,6 @@ CFStringRef diff_CFStringCreateSubstring(CFStringRef text, CFIndex start_index, 
   substringRange.location = start_index;
 
   CFStringRef substring = CFStringCreateWithSubstring(kCFAllocatorDefault, text, substringRange);
-  CFMakeCollectable(substring);
 
   return substring;
 }
@@ -94,7 +92,6 @@ CFStringRef diff_CFStringCreateByCombiningTwoStrings(CFStringRef best_common_par
   CFMutableStringRef best_common_mutable;
   best_common_length = CFStringGetLength(best_common_part1) + CFStringGetLength(best_common_part2);
   best_common_mutable = CFStringCreateMutableCopy(kCFAllocatorDefault, best_common_length, best_common_part1);
-  CFMakeCollectable(best_common_mutable);
   CFStringAppend(best_common_mutable, best_common_part2);
   return best_common_mutable;
 }
@@ -343,7 +340,6 @@ CFArrayRef diff_halfMatchCreate(CFStringRef text1, CFStringRef text2, const floa
     // => { hm[2], hm[3], hm[0], hm[1], hm[4] }
 
     CFMutableArrayRef hm_mutable = CFArrayCreateMutableCopy(kCFAllocatorDefault, CFArrayGetCount(hm), hm);
-    CFMakeCollectable(hm_mutable);
 
     CFRelease(hm);
 
@@ -431,7 +427,6 @@ CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CF
     const CFStringRef values[] = { best_longtext_a, best_longtext_b,
                      best_shorttext_a, best_shorttext_b, best_common };
     halfMatchIArray = CFArrayCreate(kCFAllocatorDefault, (const void **)values, (sizeof(values) / sizeof(values[0])), &kCFTypeArrayCallBacks);
-    CFMakeCollectable(halfMatchIArray);
   } else {
     halfMatchIArray = NULL;
   }
@@ -492,7 +487,6 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
       CFArrayAppendValue(lineArray, line);
       hash = CFArrayGetCount(lineArray) - 1;
       hashNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &hash);
-      CFMakeCollectable(hashNumber);
       CFDictionaryAddValue(lineHash, line, hashNumber);
       CFRelease(hashNumber);
       const UniChar hashChar = (UniChar)hash;
