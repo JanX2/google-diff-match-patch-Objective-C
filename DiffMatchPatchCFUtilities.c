@@ -27,7 +27,7 @@
 #include "MinMaxMacros.h"
 #include <regex.h>
 #include <limits.h>
-#include <assert.h>
+#include <AssertMacros.h>
 
 CFStringRef diff_CFStringCreateSubstring(CFStringRef text, CFIndex start_index, CFIndex length);
 CFRange diff_RightSubstringRange(CFIndex text_length, CFIndex new_length);
@@ -133,7 +133,7 @@ Boolean diff_regExMatch(CFStringRef text, const regex_t *re) {
     isMatch = (regexec(re, textCString, 0, NULL, 0) == 0);
   } else {
     isMatch = false;
-    //assert(0);
+    //check(0);
   }
 
   if (localBuffer != NULL) {
@@ -449,6 +449,7 @@ CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CF
  * @return Encoded CFStringRef.
  */
 CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef lineArray, CFMutableDictionaryRef lineHash) {
+  #define diff_UniCharMax (~(UniChar)0x00)
   #define lineStart lineStartRange.location
   #define lineEnd lineEndRange.location
 
@@ -486,6 +487,7 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
     } else {
       CFArrayAppendValue(lineArray, line);
       hash = CFArrayGetCount(lineArray) - 1;
+      check_string(hash <= diff_UniCharMax, "Hash value has exceeded UniCharMax!");
       hashNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &hash);
       CFDictionaryAddValue(lineHash, line, hashNumber);
       CFRelease(hashNumber);
@@ -497,6 +499,7 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
   }
   return chars;
 
+  #undef diff_UniCharMax
   #undef lineStart
   #undef lineEnd
 }
@@ -524,9 +527,9 @@ CFIndex diff_cleanupSemanticScore(CFStringRef one, CFStringRef two) {
 
     int status;
     status = regcomp(&blankLineEndRegEx, "\n\r?\n$", REG_EXTENDED | REG_NOSUB);
-    assert(status == 0);
+    check(status == 0);
     status = regcomp(&blankLineStartRegEx, "^\r?\n\r?\n", REG_EXTENDED | REG_NOSUB);
-    assert(status == 0);
+    check(status == 0);
 
     firstRun = false;
   }
