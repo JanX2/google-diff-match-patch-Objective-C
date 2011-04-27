@@ -644,6 +644,23 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 }
 
 /**
+ * Split a text into a list of strings.  Reduce the texts to a string of
+ * hashes where each Unicode character represents one word (or boundary between words).
+ * @param text NSString to encode.
+ * @param wordArray NSMutableArray of unique strings.
+ * @param wordHash Map of strings to indices.
+ * @return Encoded string.
+ */
+- (NSString *)diff_wordsToCharsMungeOfText:(NSString *)text
+                                 wordArray:(NSMutableArray *)wordArray
+                                  wordHash:(NSMutableDictionary *)wordHash;
+{
+  return [NSMakeCollectable(diff_wordsToCharsMungeCFStringCreate((CFStringRef)text,
+                                                                 (CFMutableArrayRef)wordArray,
+                                                                 (CFMutableDictionaryRef)wordHash)) autorelease];
+}
+
+/**
  * Find the 'middle snake' of a diff, split the problem in two
  * and return the recursively constructed diff.
  * See Myers 1986 paper: An O(ND) Difference Algorithm and Its Variations.
@@ -886,26 +903,26 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  *     encoded text2 and the NSMutableArray of unique strings. The zeroth element
  *     of the NSArray of unique strings is intentionally blank.
  */
-- (NSArray *)diff_linesToWordsForFirstString:(NSString *)text1
+- (NSArray *)diff_wordsToCharsForFirstString:(NSString *)text1
                              andSecondString:(NSString *)text2;
 {
-  NSMutableArray *lineArray = [NSMutableArray array]; // NSString objects
-  NSMutableDictionary *lineHash = [NSMutableDictionary dictionary]; // keys: NSString, values:NSNumber
-  // e.g. [lineArray objectAtIndex:4] == "Hello\n"
-  // e.g. [lineHash objectForKey:"Hello\n"] == 4
+  NSMutableArray *wordArray = [NSMutableArray array]; // NSString objects
+  NSMutableDictionary *wordHash = [NSMutableDictionary dictionary]; // keys: NSString, values:NSNumber
+  // e.g. [wordArray objectAtIndex:4] == "Hello"
+  // e.g. [wordHash objectForKey:"Hello"] == 4
 
   // "\x00" is a valid character, but various debuggers don't like it.
   // So we'll insert a junk entry to avoid generating a nil character.
-  [lineArray addObject:@""];
+  [wordArray addObject:@""];
 
-  NSString *words1 = (NSString *)diff_linesToWordsMungeCFStringCreate((CFStringRef)text1,
-                                                                      (CFMutableArrayRef)lineArray,
-                                                                      (CFMutableDictionaryRef)lineHash);
-  NSString *words2 = (NSString *)diff_linesToWordsMungeCFStringCreate((CFStringRef)text2,
-                                                                      (CFMutableArrayRef)lineArray,
-                                                                      (CFMutableDictionaryRef)lineHash);
-
-  NSArray *result = [NSArray arrayWithObjects:words1, words2, lineArray, nil];
+  NSString *words1 = NSMakeCollectable(diff_wordsToCharsMungeCFStringCreate((CFStringRef)text1,
+                                                                            (CFMutableArrayRef)wordArray,
+                                                                            (CFMutableDictionaryRef)wordHash));
+  NSString *words2 = NSMakeCollectable(diff_wordsToCharsMungeCFStringCreate((CFStringRef)text2,
+                                                                            (CFMutableArrayRef)wordArray,
+                                                                            (CFMutableDictionaryRef)wordHash));
+  
+  NSArray *result = [NSArray arrayWithObjects:words1, words2, wordArray, nil];
 
   [words1 release];
   [words2 release];

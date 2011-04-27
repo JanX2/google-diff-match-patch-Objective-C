@@ -523,7 +523,7 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
  * @param lineHash Map of strings to indices.
  * @return Encoded CFStringRef.
  */
-CFStringRef diff_linesToWordsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash) {
+CFStringRef diff_wordsToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash) {
   
   CFStringRef token;
   CFMutableStringRef chars = CFStringCreateMutable(kCFAllocatorDefault, 0);
@@ -532,10 +532,9 @@ CFStringRef diff_linesToWordsMungeCFStringCreate(CFStringRef text, CFMutableArra
   
   //CFLocaleRef currentLocale = CFLocaleCopyCurrent();
 
-  CFOptionFlags options = kCFStringTokenizerUnitWord;
+  CFOptionFlags options = kCFStringTokenizerUnitWordBoundary;
   CFRange tokenizerRange = CFRangeMake(0, textLength);
   
-  // The locale parameter is ignored for tokenizing by words
   CFStringTokenizerRef tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, text, tokenizerRange, options, NULL);
   
   //CFRelease(currentLocale);
@@ -545,29 +544,14 @@ CFStringRef diff_linesToWordsMungeCFStringCreate(CFStringRef text, CFMutableArra
 
   // Walk the text, pulling out a substring for each word (or boundary between words).
   CFRange tokenRange;
-  CFIndex prevTokenEnd = 0;
   while (mask != kCFStringTokenizerTokenNone) {
     tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
-    
-    if (tokenRange.location > prevTokenEnd) {
-      token = diff_CFStringCreateJavaSubstring(text, prevTokenEnd, tokenRange.location);
-      diff_linesMungeHelper(token, tokenArray, tokenHash, chars);
-      CFRelease(token);
-    }
     
     token = diff_CFStringCreateSubstring(text, tokenRange.location, tokenRange.length);
     diff_linesMungeHelper(token, tokenArray, tokenHash, chars);
     CFRelease(token);
     
-    prevTokenEnd = tokenRange.location + tokenRange.length;
-    
     mask = CFStringTokenizerAdvanceToNextToken(tokenizer);
-  }
-  
-  if (prevTokenEnd <= textLength - 1) {
-    token = diff_CFStringCreateJavaSubstring(text, prevTokenEnd, textLength);
-    diff_linesMungeHelper(token, tokenArray, tokenHash, chars);
-    CFRelease(token);
   }
   
   CFRelease(tokenizer);

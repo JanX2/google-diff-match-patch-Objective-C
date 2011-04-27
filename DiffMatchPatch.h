@@ -158,8 +158,9 @@ typedef enum {
 - (NSMutableArray *)diff_computeFromOldString:(NSString *)text1 andNewString:(NSString *)text2 checkLines:(BOOL)checklines deadline:(NSTimeInterval)deadline;
 - (NSMutableArray *)diff_lineModeFromOldString:(NSString *)text1 andNewString:(NSString *)text2 deadline:(NSTimeInterval)deadline;
 - (NSArray *)diff_linesToCharsForFirstString:(NSString *)text1 andSecondString:(NSString *)text1;
-- (NSArray *)diff_linesToWordsForFirstString:(NSString *)text1 andSecondString:(NSString *)text1;
+- (NSArray *)diff_wordsToCharsForFirstString:(NSString *)text1 andSecondString:(NSString *)text1;
 - (NSString *)diff_linesToCharsMungeOfText:(NSString *)text lineArray:(NSMutableArray *)lineArray lineHash:(NSMutableDictionary *)lineHash;
+- (NSString *)diff_wordsToCharsMungeOfText:(NSString *)text wordArray:(NSMutableArray *)wordArray wordHash:(NSMutableDictionary *)wordHash;
 - (void)diff_chars:(NSArray *)diffs toLines:(NSMutableArray *)lineArray;
 - (NSMutableArray *)diff_bisectOfOldString:(NSString *)text1 andNewString:(NSString *)text2 deadline:(NSTimeInterval)deadline;
 - (NSMutableArray *)diff_bisectSplitOfOldString:(NSString *)text1 andNewString:(NSString *)text2 x:(NSUInteger)x y:(NSUInteger)y deadline:(NSTimeInterval)deadline;

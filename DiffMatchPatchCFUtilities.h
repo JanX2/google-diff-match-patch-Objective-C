@@ -33,7 +33,7 @@ CFArrayRef diff_halfMatchCreate(CFStringRef text1, CFStringRef text2, const floa
 CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CFIndex i);
 
 CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef lineArray, CFMutableDictionaryRef lineHash);
-CFStringRef diff_linesToWordsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash);
+CFStringRef diff_wordsToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash);
 
 CFIndex diff_cleanupSemanticScore(CFStringRef one, CFStringRef two);
 

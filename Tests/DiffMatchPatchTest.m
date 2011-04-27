@@ -185,7 +185,7 @@
   [dmp release];
 }
 
-- (void)test_diff_linesToWordsTest {
+- (void)test_diff_wordsToCharsTest {
   DiffMatchPatch *dmp = [DiffMatchPatch new];
   NSArray *result;
   
@@ -196,10 +196,59 @@
   [tmpVector addObject:@" "];
   [tmpVector addObject:@"beta"];
   [tmpVector addObject:@"\n"];
-  result = [dmp diff_linesToWordsForFirstString:@"alpha beta alpha\n" andSecondString:@"beta alpha beta\n"];
+  result = [dmp diff_wordsToCharsForFirstString:@"alpha beta alpha\n" andSecondString:@"beta alpha beta\n"];
   STAssertEqualObjects(@"\001\002\003\002\001\004", [result objectAtIndex:0], @"Convert words down to characters #1");
   STAssertEqualObjects(@"\003\002\001\002\003\004", [result objectAtIndex:1], @"Convert words down to characters #2");
   STAssertEqualObjects(tmpVector, (NSArray *)[result objectAtIndex:2], @"Convert words down to characters #3");
+  
+  [tmpVector removeAllObjects];
+  [tmpVector addObject:@""];
+  [tmpVector addObject:@"alpha"];
+  [tmpVector addObject:@"\r"];
+  [tmpVector addObject:@" "];
+  [tmpVector addObject:@"beta"];
+  [tmpVector addObject:@"\r\n"];
+  result = [dmp diff_wordsToCharsForFirstString:@"" andSecondString:@"alpha\r beta\r \r \r\n"];
+  STAssertEqualObjects(@"", [result objectAtIndex:0], @"Convert words down to characters #4");
+  STAssertEqualObjects(@"\001\002\003\004\002\003\002\003\005", [result objectAtIndex:1], @"Convert words down to characters #5");
+  STAssertEqualObjects(tmpVector, (NSArray *)[result objectAtIndex:2], @"Convert words down to characters #6");
+  
+  [tmpVector removeAllObjects];
+  [tmpVector addObject:@""];
+  [tmpVector addObject:@"a"];
+  [tmpVector addObject:@"b"];
+  result = [dmp diff_wordsToCharsForFirstString:@"a" andSecondString:@"b"];
+  STAssertEqualObjects(@"\001", [result objectAtIndex:0], @"Convert words down to characters #7");
+  STAssertEqualObjects(@"\002", [result objectAtIndex:1], @"Convert words down to characters #8");
+  STAssertEqualObjects(tmpVector, (NSArray *)[result objectAtIndex:2], @"Convert words down to characters #9");
+  
+  // More than 256 to reveal any 8-bit limitations.
+  unichar n = 300;
+  [tmpVector removeAllObjects];
+  NSMutableString *words = [NSMutableString string];
+  NSMutableString *chars = [NSMutableString string];
+
+  [words appendString:@" "];
+  
+  NSString *currentWord;
+  unichar i;
+  for (unichar x = 1; x < n + 1; x++) {
+    i = x + 1;
+    currentWord = [NSString stringWithFormat:@"%d ", (int)x];
+    [tmpVector addObject:[NSString stringWithFormat:@"%d", (int)x]];
+    [words appendString:currentWord];
+    [chars appendString:[NSString stringWithFormat:@"%C\001", i]];
+  }
+  STAssertEquals((NSUInteger)n, tmpVector.count, @"Convert words down to characters #10");
+  STAssertEquals((NSUInteger)n, chars.length/2, @"Convert words down to characters #11");
+  [tmpVector insertObject:@"" atIndex:0];
+  [tmpVector insertObject:@" " atIndex:1];
+  [chars insertString:@"\001" atIndex:0];
+  result = [dmp diff_wordsToCharsForFirstString:words andSecondString:@""];
+  NSMutableString *charsCmp = [result objectAtIndex:0];
+  STAssertEqualObjects(chars, charsCmp, @"Convert words down to characters #12");
+  STAssertEqualObjects(@"", [result objectAtIndex:1], @"Convert words down to characters #13");
+  STAssertEqualObjects(tmpVector, (NSArray *)[result objectAtIndex:2], @"Convert words down to characters #14");
   
   [dmp release];
 }
