@@ -1200,18 +1200,17 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (void)diff_cleanupEfficiency:(NSMutableArray *)diffs;
 {
 #define thisDiff ((Diff *)[diffs objectAtIndex:thisPointer])
-#define equalitiesLastItem ((NSNumber *)equalities.lastObject)
-#define equalitiesLastValue ((NSNumber *)equalities.lastObject).integerValue
+#define equalitiesLastValue (diff_CFArrayLastValueAsCFIndex(equalities))
   if (diffs.count == 0) {
     return;
   }
 
   BOOL changes = NO;
   // Stack of indices where equalities are found.
-  NSMutableArray *equalities = [NSMutableArray array];
-  // Always equal to equalities.lastObject.text
+  CFMutableArrayRef equalities = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
+  // Always equal to [diffs objectAtIndex:equalitiesLastValue].text
   NSString *lastequality = @"";
-  NSInteger thisPointer = 0;  // Index of current position.
+  CFIndex thisPointer = 0;  // Index of current position.
   // Is there an insertion operation before the last equality.
   BOOL pre_ins = NO;
   // Is there a deletion operation before the last equality.
@@ -1224,17 +1223,17 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   NSUInteger indexToChange;
   Diff *diffToChange;
 
-  while (thisPointer < (NSInteger)diffs.count) {
+  while (thisPointer < (CFIndex)diffs.count) {
     if (thisDiff.operation == DIFF_EQUAL) {  // Equality found.
       if (thisDiff.text.length < Diff_EditCost && (post_ins || post_del)) {
         // Candidate found.
-        [equalities addObject:[NSNumber numberWithInteger:thisPointer]];
+        CFArrayAppendValue(equalities, (void *)thisPointer);
         pre_ins = post_ins;
         pre_del = post_del;
         lastequality = thisDiff.text;
       } else {
         // Not a candidate, and can never become one.
-        [equalities removeAllObjects];
+        CFArrayRemoveAllValues(equalities);
         lastequality = @"";
       }
       post_ins = post_del = NO;
@@ -1269,18 +1268,18 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         [diffs replaceObjectAtIndex:indexToChange withObject:diffToChange];
         [diffToChange release];
 
-        [equalities removeLastObject];   // Throw away the equality we just deleted.
+        diff_CFArrayRemoveLastValue(equalities);   // Throw away the equality we just deleted.
         lastequality = @"";
         if (pre_ins && pre_del) {
           // No changes made which could affect previous entry, keep going.
           post_ins = post_del = YES;
-          [equalities removeAllObjects];
+          CFArrayRemoveAllValues(equalities);
         } else {
-          if (equalities.count > 0) {
-            [equalities removeLastObject];
+          if (CFArrayGetCount(equalities) > 0) {
+            diff_CFArrayRemoveLastValue(equalities);
           }
 
-          thisPointer = equalities.count > 0 ? equalitiesLastValue : -1;
+          thisPointer = CFArrayGetCount(equalities) > 0 ? equalitiesLastValue : -1;
           post_ins = post_del = NO;
         }
         changes = YES;
@@ -1292,9 +1291,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   if (changes) {
     [self diff_cleanupMerge:diffs];
   }
+  
+  CFRelease(equalities);
 
 #undef thisDiff
-#undef equalitiesLastItem
 #undef equalitiesLastValue
 }
 
@@ -1587,8 +1587,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 #define prevDiff ((Diff *)[diffs objectAtIndex:(thisPointer - 1)])
 #define thisDiff ((Diff *)[diffs objectAtIndex:thisPointer])
 #define nextDiff ((Diff *)[diffs objectAtIndex:(thisPointer + 1)])
-#define equalitiesLastItem ((NSNumber *)equalities.lastObject)
-#define equalitiesLastValue ((NSNumber *)equalities.lastObject).integerValue
+#define equalitiesLastValue (diff_CFArrayLastValueAsCFIndex(equalities))
 
   if (diffs == nil || diffs.count == 0) {
     return;
@@ -1596,8 +1595,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
   BOOL changes = NO;
   // Stack of indices where equalities are found.
-  NSMutableArray *equalities = [NSMutableArray array];
-  // Always equal to [equalities objectAtIndex:(equalitiesLength-1)][1]
+  CFMutableArrayRef equalities = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
+  // Always equal to [diffs objectAtIndex:equalitiesLastValue].text
   NSString *lastequality = nil;
   NSUInteger thisPointer = 0;  // Index of current position.
   // Number of characters that changed prior to the equality.
@@ -1612,7 +1611,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
   while (thisPointer < diffs.count) {
     if (thisDiff.operation == DIFF_EQUAL) {  // Equality found.
-      [equalities addObject:[NSNumber numberWithInteger:thisPointer]];
+      CFArrayAppendValue(equalities, (void *)thisPointer);
       length_insertions1 = length_insertions2;
       length_deletions1 = length_deletions2;
       length_insertions2 = 0;
@@ -1639,14 +1638,14 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         [diffToChange release];
 
         // Throw away the equality we just deleted.
-        [equalities removeLastObject];
-        if (equalities.count > 0) {
-          [equalities removeLastObject];
+        diff_CFArrayRemoveLastValue(equalities);
+        if (CFArrayGetCount(equalities) > 0) {
+          diff_CFArrayRemoveLastValue(equalities);
         }
         // Setting an unsigned value to -1 may seem weird to some,
         // but we will pass thru a ++ below:
         // => overflow => 0
-        thisPointer = equalities.count > 0 ? equalitiesLastValue : -1;
+        thisPointer = CFArrayGetCount(equalities) > 0 ? equalitiesLastValue : -1;
         length_insertions1 = 0; // Reset the counters.
         length_deletions1 = 0;
         length_insertions2 = 0;
@@ -1687,11 +1686,12 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     }
     thisPointer++;
   }
+  
+  CFRelease(equalities);
 
 #undef prevDiff
 #undef thisDiff
 #undef nextDiff
-#undef equalitiesLastItem
 #undef equalitiesLastValue
 }
 

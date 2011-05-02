@@ -47,4 +47,16 @@ CF_INLINE void diff_CFStringPrepareUniCharBuffer(CFStringRef string, const UniCh
   }
 }
 
+#define CFIndexArrayLastValueIndex (CFArrayGetCount(theArray)-1)
+
+CF_INLINE CFIndex diff_CFArrayLastValueAsCFIndex(CFMutableArrayRef theArray) {
+  return (CFIndex)CFArrayGetValueAtIndex(theArray, CFIndexArrayLastValueIndex);
+}
+
+CF_INLINE void diff_CFArrayRemoveLastValue(CFMutableArrayRef theArray) {
+  CFArrayRemoveValueAtIndex(theArray, CFIndexArrayLastValueIndex);
+}
+
+#undef CFIndexArrayLastValueIndex
+
 #endif //ifndef _DIFFMATCHPATCHCFUTILITIES_H
