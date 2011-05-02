@@ -871,7 +871,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                              andSecondString:(NSString *)text2;
 {
   NSMutableArray *lineArray = [NSMutableArray array]; // NSString objects
-  NSMutableDictionary *lineHash = [NSMutableDictionary dictionary]; // keys: NSString, values:NSNumber
+  CFMutableDictionaryRef lineHash = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, NULL); // keys: NSString, values:raw CFIndex
   // e.g. [lineArray objectAtIndex:4] == "Hello\n"
   // e.g. [lineHash objectForKey:"Hello\n"] == 4
 
@@ -881,15 +881,17 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
   NSString *chars1 = NSMakeCollectable(diff_linesToCharsMungeCFStringCreate((CFStringRef)text1,
                                                                             (CFMutableArrayRef)lineArray,
-                                                                            (CFMutableDictionaryRef)lineHash));
+                                                                            lineHash));
   NSString *chars2 = NSMakeCollectable(diff_linesToCharsMungeCFStringCreate((CFStringRef)text2,
                                                                             (CFMutableArrayRef)lineArray,
-                                                                            (CFMutableDictionaryRef)lineHash));
+                                                                            lineHash));
   
   NSArray *result = [NSArray arrayWithObjects:chars1, chars2, lineArray, nil];
 
   [chars1 release];
   [chars2 release];
+
+  CFRelease(lineHash);
 
   return result;
 }
@@ -907,7 +909,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                              andSecondString:(NSString *)text2;
 {
   NSMutableArray *wordArray = [NSMutableArray array]; // NSString objects
-  NSMutableDictionary *wordHash = [NSMutableDictionary dictionary]; // keys: NSString, values:NSNumber
+  CFMutableDictionaryRef wordHash = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, NULL); // keys: NSString, values:raw CFIndex
   // e.g. [wordArray objectAtIndex:4] == "Hello"
   // e.g. [wordHash objectForKey:"Hello"] == 4
 
@@ -917,15 +919,17 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
   NSString *words1 = NSMakeCollectable(diff_wordsToCharsMungeCFStringCreate((CFStringRef)text1,
                                                                             (CFMutableArrayRef)wordArray,
-                                                                            (CFMutableDictionaryRef)wordHash));
+                                                                            wordHash));
   NSString *words2 = NSMakeCollectable(diff_wordsToCharsMungeCFStringCreate((CFStringRef)text2,
                                                                             (CFMutableArrayRef)wordArray,
-                                                                            (CFMutableDictionaryRef)wordHash));
+                                                                            wordHash));
   
   NSArray *result = [NSArray arrayWithObjects:words1, words2, wordArray, nil];
 
   [words1 release];
   [words2 release];
+  
+  CFRelease(wordHash);
 
   return result;
 }

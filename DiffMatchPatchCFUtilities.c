@@ -446,20 +446,16 @@ void diff_linesMungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMu
   #define diff_UniCharMax (~(UniChar)0x00)
   
   CFIndex hash;
-  CFNumberRef hashNumber;
   
   if (CFDictionaryContainsKey(tokenHash, token)) {
-    CFDictionaryGetValueIfPresent(tokenHash, token, (const void **)&hashNumber);
-    CFNumberGetValue(hashNumber, kCFNumberCFIndexType, &hash);
+    CFDictionaryGetValueIfPresent(tokenHash, token, (const void **)&hash);
     const UniChar hashChar = (UniChar)hash;
     CFStringAppendCharacters(chars, &hashChar, 1);
   } else {
     CFArrayAppendValue(tokenArray, token);
     hash = CFArrayGetCount(tokenArray) - 1;
     check_string(hash <= diff_UniCharMax, "Hash value has exceeded UniCharMax!");
-    hashNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &hash);
-    CFDictionaryAddValue(tokenHash, token, hashNumber);
-    CFRelease(hashNumber);
+    CFDictionaryAddValue(tokenHash, token, (void *)hash);
     const UniChar hashChar = (UniChar)hash;
     CFStringAppendCharacters(chars, &hashChar, 1);
   }
