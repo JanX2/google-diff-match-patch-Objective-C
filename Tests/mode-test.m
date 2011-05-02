@@ -77,6 +77,9 @@ NSString * diff_stringForURL(NSURL *aURL) {
                                           initWithURL:aURL
                                           options:documentOptions
                                           documentAttributes:&documentAttributes error:&error];
+  if (!attributedString) {
+    NSLog(@"%@", error);
+  }
   NSString *string = [attributedString string];
 
   return [string autorelease];
@@ -108,6 +111,10 @@ int main (int argc, const char * argv[]) {
   
   NSString *text1 = diff_stringForURL(fileURL1);
   NSString *text2 = diff_stringForURL(fileURL2);
+  
+  if (text1 == nil || text2 == nil) {
+    return EXIT_FAILURE;
+  }
   
   NSMutableArray *diffs;
   NSUInteger mode = DIFF_DEFAULT_MODE;
