@@ -447,8 +447,7 @@ void diff_linesMungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMu
   
   CFIndex hash;
   
-  if (CFDictionaryContainsKey(tokenHash, token)) {
-    CFDictionaryGetValueIfPresent(tokenHash, token, (const void **)&hash);
+  if (CFDictionaryGetValueIfPresent(tokenHash, token, (const void **)&hash)) {
     const UniChar hashChar = (UniChar)hash;
     CFStringAppendCharacters(chars, &hashChar, 1);
   } else {
