@@ -41,7 +41,7 @@ Boolean diff_regExMatch(CFStringRef text, const regex_t *re);
 
 CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CFIndex i);
 
-void diff_linesMungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash, CFMutableStringRef chars);
+void diff_mungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash, CFMutableStringRef chars);
 
 // Utility functions
 CFStringRef diff_CFStringCreateFromUnichar(UniChar ch) {
@@ -442,7 +442,7 @@ CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CF
   return halfMatchIArray;
 }
 
-void diff_linesMungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash, CFMutableStringRef chars) {
+void diff_mungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash, CFMutableStringRef chars) {
   #define diff_UniCharMax (~(UniChar)0x00)
   
   CFIndex hash;
@@ -498,7 +498,7 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
     line = diff_CFStringCreateJavaSubstring(text, lineStart, lineEnd + 1);
     lineStart = lineEnd + 1;
 
-    diff_linesMungeHelper(line, lineArray, lineHash, chars);
+    diff_mungeHelper(line, lineArray, lineHash, chars);
 
     CFRelease(line);
   }
@@ -543,7 +543,7 @@ CFStringRef diff_wordsToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
     tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
     
     token = diff_CFStringCreateSubstring(text, tokenRange.location, tokenRange.length);
-    diff_linesMungeHelper(token, tokenArray, tokenHash, chars);
+    diff_mungeHelper(token, tokenArray, tokenHash, chars);
     CFRelease(token);
     
     mask = CFStringTokenizerAdvanceToNextToken(tokenizer);
