@@ -661,6 +661,58 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 }
 
 /**
+ * Split a text into a list of strings.  Reduce the texts to a string of
+ * hashes where each Unicode character represents one sentence.
+ * @param text NSString to encode.
+ * @param sentenceArray NSMutableArray of unique strings.
+ * @param sentenceHash Map of strings to indices.
+ * @return Encoded string.
+ */
+- (NSString *)diff_sentencesToCharsMungeOfText:(NSString *)text
+                                 sentenceArray:(NSMutableArray *)sentenceArray
+                                  sentenceHash:(NSMutableDictionary *)sentenceHash;
+{
+  return [NSMakeCollectable(diff_sentencesToCharsMungeCFStringCreate((CFStringRef)text,
+                                                                     (CFMutableArrayRef)sentenceArray,
+                                                                     (CFMutableDictionaryRef)sentenceHash)) autorelease];
+}
+
+/**
+ * Split a text into a list of strings.  Reduce the texts to a string of
+ * hashes where each Unicode character represents one paragraph.
+ * @param text NSString to encode.
+ * @param paragraphArray NSMutableArray of unique strings.
+ * @param paragraphHash Map of strings to indices.
+ * @return Encoded string.
+ */
+- (NSString *)diff_paragraphsToCharsMungeOfText:(NSString *)text
+                                 paragraphArray:(NSMutableArray *)paragraphArray
+                                  paragraphHash:(NSMutableDictionary *)paragraphHash;
+{
+  return [NSMakeCollectable(diff_paragraphsToCharsMungeCFStringCreate((CFStringRef)text,
+                                                                      (CFMutableArrayRef)paragraphArray,
+                                                                      (CFMutableDictionaryRef)paragraphHash)) autorelease];
+}
+
+/**
+ * Split a text into a list of strings.  Reduce the texts to a string of
+ * hashes where each Unicode character represents one line.
+ * This is a line break agnostic version: it does not care which type of line break is used.
+ * @param text NSString to encode.
+ * @param lineArray NSMutableArray of unique strings.
+ * @param lineHash Map of strings to indices.
+ * @return Encoded string.
+ */
+- (NSString *)diff_lineBreakAgnosticLinesToCharsMungeOfText:(NSString *)text
+                                 lineArray:(NSMutableArray *)lineArray
+                                  lineHash:(NSMutableDictionary *)lineHash;
+{
+  return [NSMakeCollectable(diff_lineBreakAgnosticLinesToCharsMungeCFStringCreate((CFStringRef)text,
+                                                                                  (CFMutableArrayRef)lineArray,
+                                                                                  (CFMutableDictionaryRef)lineHash)) autorelease];
+}
+
+/**
  * Find the 'middle snake' of a diff, split the problem in two
  * and return the recursively constructed diff.
  * See Myers 1986 paper: An O(ND) Difference Algorithm and Its Variations.
@@ -898,6 +950,68 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
 /**
  * Split two texts into a list of strings.  Reduce the texts to a string of
+ * hashes where each Unicode character represents one token (or boundary between tokens).
+ * A token can be a type of text fragment: a word, sentence, paragraph or line. 
+ * The type is determined by the mode object. 
+ * @param text1 First NSString.
+ * @param text2 Second NSString.
+ * @param mode Object determining the mode.
+ * @return Three element NSArray, containing the encoded text1, the
+ *     encoded text2 and the NSMutableArray of unique strings. The zeroth element
+ *     of the NSArray of unique strings is intentionally blank.
+ */
+- (NSArray *)diff_tokensToCharsForFirstString:(NSString *)text1
+                              andSecondString:(NSString *)text2
+                                         mode:(DiffTokenMode)mode;
+{
+  CFOptionFlags tokenizerOptions;
+
+  switch (mode) {
+    case DiffWordTokens:
+      tokenizerOptions = kCFStringTokenizerUnitWordBoundary;
+      break;
+    case DiffParagraphTokens:
+      tokenizerOptions = kCFStringTokenizerUnitParagraph;
+      break;
+    case DiffSentenceTokens:
+      tokenizerOptions = kCFStringTokenizerUnitSentence;
+      break;
+    case DiffLineBreakAgnosticLineTokens:
+    default:
+      tokenizerOptions = kCFStringTokenizerUnitLineBreak;
+      break;
+  }
+  
+  NSMutableArray *tokenArray = [NSMutableArray array]; // NSString objects
+  CFMutableDictionaryRef tokenHash = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, NULL); // keys: NSString, values:raw CFIndex
+  // e.g. [tokenArray objectAtIndex:4] == "Hello"
+  // e.g. [tokenHash objectForKey:"Hello"] == 4
+  
+  // "\x00" is a valid character, but various debuggers don't like it.
+  // So we'll insert a junk entry to avoid generating a nil character.
+  [tokenArray addObject:@""];
+  
+  NSString *tokens1 = NSMakeCollectable(diff_tokensToCharsMungeCFStringCreate((CFStringRef)text1,
+                                                                              (CFMutableArrayRef)tokenArray,
+                                                                              tokenHash,
+                                                                              tokenizerOptions));
+  NSString *tokens2 = NSMakeCollectable(diff_tokensToCharsMungeCFStringCreate((CFStringRef)text2,
+                                                                              (CFMutableArrayRef)tokenArray,
+                                                                              tokenHash,
+                                                                              tokenizerOptions));
+  
+  NSArray *result = [NSArray arrayWithObjects:tokens1, tokens2, tokenArray, nil];
+  
+  [tokens1 release];
+  [tokens2 release];
+  
+  CFRelease(tokenHash);
+  
+  return result;
+}
+
+/**
+ * Split two texts into a list of strings.  Reduce the texts to a string of
  * hashes where each Unicode character represents one word (or boundary between words).
  * @param text1 First NSString.
  * @param text2 Second NSString.
@@ -908,30 +1022,9 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSArray *)diff_wordsToCharsForFirstString:(NSString *)text1
                              andSecondString:(NSString *)text2;
 {
-  NSMutableArray *wordArray = [NSMutableArray array]; // NSString objects
-  CFMutableDictionaryRef wordHash = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, NULL); // keys: NSString, values:raw CFIndex
-  // e.g. [wordArray objectAtIndex:4] == "Hello"
-  // e.g. [wordHash objectForKey:"Hello"] == 4
-
-  // "\x00" is a valid character, but various debuggers don't like it.
-  // So we'll insert a junk entry to avoid generating a nil character.
-  [wordArray addObject:@""];
-
-  NSString *words1 = NSMakeCollectable(diff_wordsToCharsMungeCFStringCreate((CFStringRef)text1,
-                                                                            (CFMutableArrayRef)wordArray,
-                                                                            wordHash));
-  NSString *words2 = NSMakeCollectable(diff_wordsToCharsMungeCFStringCreate((CFStringRef)text2,
-                                                                            (CFMutableArrayRef)wordArray,
-                                                                            wordHash));
-  
-  NSArray *result = [NSArray arrayWithObjects:words1, words2, wordArray, nil];
-
-  [words1 release];
-  [words2 release];
-  
-  CFRelease(wordHash);
-
-  return result;
+  return [self diff_tokensToCharsForFirstString:text1 
+                                andSecondString:text2 
+                                           mode:DiffWordTokens];
 }
 
 /**

@@ -42,6 +42,12 @@ typedef enum {
   DIFF_EQUAL = 3
 } Operation;
 
+typedef enum {
+  DiffWordTokens = 1,
+  DiffParagraphTokens = 2,
+  DiffSentenceTokens = 3,
+  DiffLineBreakAgnosticLineTokens = 4
+} DiffTokenMode;
 
 /*
  * Class representing one diff operation.
@@ -158,9 +164,13 @@ typedef enum {
 - (NSMutableArray *)diff_computeFromOldString:(NSString *)text1 andNewString:(NSString *)text2 checkLines:(BOOL)checklines deadline:(NSTimeInterval)deadline;
 - (NSMutableArray *)diff_lineModeFromOldString:(NSString *)text1 andNewString:(NSString *)text2 deadline:(NSTimeInterval)deadline;
 - (NSArray *)diff_linesToCharsForFirstString:(NSString *)text1 andSecondString:(NSString *)text1;
+- (NSArray *)diff_tokensToCharsForFirstString:(NSString *)text1 andSecondString:(NSString *)text2 mode:(DiffTokenMode)mode;
 - (NSArray *)diff_wordsToCharsForFirstString:(NSString *)text1 andSecondString:(NSString *)text1;
 - (NSString *)diff_linesToCharsMungeOfText:(NSString *)text lineArray:(NSMutableArray *)lineArray lineHash:(NSMutableDictionary *)lineHash;
 - (NSString *)diff_wordsToCharsMungeOfText:(NSString *)text wordArray:(NSMutableArray *)wordArray wordHash:(NSMutableDictionary *)wordHash;
+- (NSString *)diff_sentencesToCharsMungeOfText:(NSString *)text sentenceArray:(NSMutableArray *)sentenceArray sentenceHash:(NSMutableDictionary *)sentenceHash;
+- (NSString *)diff_paragraphsToCharsMungeOfText:(NSString *)text paragraphArray:(NSMutableArray *)paragraphArray paragraphHash:(NSMutableDictionary *)paragraphHash;
+- (NSString *)diff_lineBreakAgnosticLinesToCharsMungeOfText:(NSString *)text lineArray:(NSMutableArray *)lineArray lineHash:(NSMutableDictionary *)lineHash;
 - (void)diff_chars:(NSArray *)diffs toLines:(NSMutableArray *)lineArray;
 - (NSMutableArray *)diff_bisectOfOldString:(NSString *)text1 andNewString:(NSString *)text2 deadline:(NSTimeInterval)deadline;
 - (NSMutableArray *)diff_bisectSplitOfOldString:(NSString *)text1 andNewString:(NSString *)text2 x:(NSUInteger)x y:(NSUInteger)y deadline:(NSTimeInterval)deadline;

@@ -42,7 +42,6 @@ Boolean diff_regExMatch(CFStringRef text, const regex_t *re);
 CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CFIndex i);
 
 void diff_mungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash, CFMutableStringRef chars);
-CFStringRef diff_tokensToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash, CFOptionFlags tokenizerOptions);
 
 // Utility functions
 CFStringRef diff_CFStringCreateFromUnichar(UniChar ch) {
