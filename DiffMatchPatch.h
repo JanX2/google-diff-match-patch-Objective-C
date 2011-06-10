@@ -46,7 +46,7 @@ typedef enum {
   DiffWordTokens = 1,
   DiffParagraphTokens = 2,
   DiffSentenceTokens = 3,
-  DiffLineBreakAgnosticLineTokens = 4
+  DiffLineBreakDelimiteredTokens = 4
 } DiffTokenMode;
 
 /*
@@ -170,7 +170,7 @@ typedef enum {
 - (NSString *)diff_wordsToCharsMungeOfText:(NSString *)text wordArray:(NSMutableArray *)wordArray wordHash:(NSMutableDictionary *)wordHash;
 - (NSString *)diff_sentencesToCharsMungeOfText:(NSString *)text sentenceArray:(NSMutableArray *)sentenceArray sentenceHash:(NSMutableDictionary *)sentenceHash;
 - (NSString *)diff_paragraphsToCharsMungeOfText:(NSString *)text paragraphArray:(NSMutableArray *)paragraphArray paragraphHash:(NSMutableDictionary *)paragraphHash;
-- (NSString *)diff_lineBreakAgnosticLinesToCharsMungeOfText:(NSString *)text lineArray:(NSMutableArray *)lineArray lineHash:(NSMutableDictionary *)lineHash;
+- (NSString *)diff_lineBreakDelimiteredToCharsMungeOfText:(NSString *)text lineArray:(NSMutableArray *)lineArray lineHash:(NSMutableDictionary *)lineHash;
 - (void)diff_chars:(NSArray *)diffs toLines:(NSMutableArray *)lineArray;
 - (NSMutableArray *)diff_bisectOfOldString:(NSString *)text1 andNewString:(NSString *)text2 deadline:(NSTimeInterval)deadline;
 - (NSMutableArray *)diff_bisectSplitOfOldString:(NSString *)text1 andNewString:(NSString *)text2 x:(NSUInteger)x y:(NSUInteger)y deadline:(NSTimeInterval)deadline;

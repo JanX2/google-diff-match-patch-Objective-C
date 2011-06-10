@@ -696,20 +696,21 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
 /**
  * Split a text into a list of strings.  Reduce the texts to a string of
- * hashes where each Unicode character represents one line.
- * This is a line break agnostic version: it does not care which type of line break is used.
+ * hashes where each Unicode character represents one text fragment delimitered by line breaks (including the trailing line break characters if any).
+ * In this context “line break” does not refere to “something you get when you press the return-key”. 
+ * Instead it the refers to “line break boundaries” as defined in “UAX #14: Unicode Line Breaking Algorithm” (http://www.unicode.org/reports/tr14/). 
  * @param text NSString to encode.
  * @param lineArray NSMutableArray of unique strings.
  * @param lineHash Map of strings to indices.
  * @return Encoded string.
  */
-- (NSString *)diff_lineBreakAgnosticLinesToCharsMungeOfText:(NSString *)text
-                                 lineArray:(NSMutableArray *)lineArray
-                                  lineHash:(NSMutableDictionary *)lineHash;
+- (NSString *)diff_lineBreakDelimiteredToCharsMungeOfText:(NSString *)text
+                                                lineArray:(NSMutableArray *)lineArray
+                                                 lineHash:(NSMutableDictionary *)lineHash;
 {
-  return [NSMakeCollectable(diff_lineBreakAgnosticLinesToCharsMungeCFStringCreate((CFStringRef)text,
-                                                                                  (CFMutableArrayRef)lineArray,
-                                                                                  (CFMutableDictionaryRef)lineHash)) autorelease];
+  return [NSMakeCollectable(diff_lineBreakDelimiteredToCharsMungeCFStringCreate((CFStringRef)text,
+                                                                                (CFMutableArrayRef)lineArray,
+                                                                                (CFMutableDictionaryRef)lineHash)) autorelease];
 }
 
 /**
@@ -976,7 +977,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     case DiffSentenceTokens:
       tokenizerOptions = kCFStringTokenizerUnitSentence;
       break;
-    case DiffLineBreakAgnosticLineTokens:
+    case DiffLineBreakDelimiteredTokens:
     default:
       tokenizerOptions = kCFStringTokenizerUnitLineBreak;
       break;

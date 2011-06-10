@@ -31,7 +31,7 @@ typedef enum {
   DiffWordMode = 3,
   DiffParagraphMode = 4,
   DiffSentenceMode = 5,
-  DiffLineBreakAgnosticLineMode = 6
+  DiffLineBreakDelimiteredMode = 6
 } DiffMode;
 
 
@@ -61,8 +61,8 @@ NSMutableArray * diff_withMode(NSString *text1, NSString *text2, DiffMode mode) 
     case DiffSentenceMode:
       tokenMode = DiffSentenceTokens;
       break;
-    case DiffLineBreakAgnosticLineMode:
-      tokenMode = DiffLineBreakAgnosticLineTokens;
+    case DiffLineBreakDelimiteredMode:
+      tokenMode = DiffLineBreakDelimiteredTokens;
       break;
     default:
       tokenMode = 0;
@@ -132,7 +132,7 @@ int main (int argc, const char * argv[]) {
   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
   
   if ([[[NSProcessInfo processInfo] arguments] count] < 3) {
-    fprintf(stderr, "usage: %s <txt1> <txt2> [default|line|word|paragraph|sentence|line-break-agnostic]\n",
+    fprintf(stderr, "usage: %s <txt1> <txt2> [default|line|word|paragraph|sentence|line-break-delimitered]\n",
             [[[NSProcessInfo processInfo] processName] UTF8String]);
     [pool drain];
     return EXIT_FAILURE;
@@ -169,8 +169,8 @@ int main (int argc, const char * argv[]) {
     else if ([modeString isEqualToString:@"sentence"]) {
       mode = DiffSentenceMode;
     }
-    else if ([modeString isEqualToString:@"line-break-agnostic"]) {
-      mode = DiffLineBreakAgnosticLineMode;
+    else if ([modeString isEqualToString:@"line-break-delimitered"]) {
+      mode = DiffLineBreakDelimiteredMode;
     }
   }
   

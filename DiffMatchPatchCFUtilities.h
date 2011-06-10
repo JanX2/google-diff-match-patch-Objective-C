@@ -37,7 +37,7 @@ CFStringRef diff_tokensToCharsMungeCFStringCreate(CFStringRef text, CFMutableArr
 CFStringRef diff_wordsToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash);
 CFStringRef diff_sentencesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash);
 CFStringRef diff_paragraphsToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash);
-CFStringRef diff_lineBreakAgnosticLinesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash);
+CFStringRef diff_lineBreakDelimiteredToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash);
 
 CFIndex diff_cleanupSemanticScore(CFStringRef one, CFStringRef two);
 
