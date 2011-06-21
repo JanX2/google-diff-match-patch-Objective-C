@@ -1553,13 +1553,13 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
           return nil;
         }
         NSString *text;
-        @try {
+        NSRange text1Range = NSMakeRange(0, text1.length);
+        if (NSLocationInRange(thisPointer, text1Range) && NSLocationInRange(thisPointer+(NSUInteger)n, text1Range)) {
           text = [text1 substringWithRange:NSMakeRange(thisPointer, (NSUInteger)n)];
           thisPointer += (NSUInteger)n;
         }
-        @catch (NSException *e) {
+        else {
           if (error != NULL) {
-            // CHANGME: Pass on the information contained in e
             errorDetail = [NSDictionary dictionaryWithObjectsAndKeys:
                 [NSString stringWithFormat:NSLocalizedString(@"Delta length (%lu) larger than source text length (%lu).", @"Error"),
                  (unsigned long)thisPointer, (unsigned long)text1.length],
@@ -2571,6 +2571,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   BOOL scanSuccess, hasOptional;
   NSInteger scannedValue, optionalValue;
   NSDictionary *errorDetail = nil;
+  NSString *textAtTextPointer;
 
   unichar sign;
   NSString *line;
@@ -2652,15 +2653,16 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     textPointer++;
 
     while (textPointer < text.count) {
-      @try {
-        sign = [[text objectAtIndex:textPointer] characterAtIndex:0];
+      textAtTextPointer = [text objectAtIndex:textPointer];
+      if (textAtTextPointer.length > 0) {
+        sign = [textAtTextPointer characterAtIndex:0];
       }
-      @catch (NSException *e) {
+      else {
         // Blank line?  Whatever.
         textPointer++;
         continue;
       }
-      line = [[[text objectAtIndex:textPointer] substringFromIndex:1]
+      line = [[textAtTextPointer substringFromIndex:1]
               diff_stringByReplacingPercentEscapesForEncodeUriCompatibility];
       if (sign == '-') {
         // Deletion.
