@@ -1354,13 +1354,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         [diffs insertObject:[Diff diffWithOperation:DIFF_DELETE andText:lastequality]
                     atIndex:equalitiesLastValue];
         // Change second copy to insert.
-        // Hash values for objects must not change while in a collection
         indexToChange = equalitiesLastValue + 1;
-        diffToChange = [[diffs objectAtIndex:indexToChange] retain];
-        [diffs replaceObjectAtIndex:indexToChange withObject:[NSNull null]];
+        diffToChange = [diffs objectAtIndex:indexToChange];
+        // The following assumes, that the diff we are changing is currently not used in a collection where its hash determines its position (e.g. a dictionary)
         diffToChange.operation = DIFF_INSERT;
-        [diffs replaceObjectAtIndex:indexToChange withObject:diffToChange];
-        [diffToChange release];
 
         diff_CFArrayRemoveLastValue(equalities);   // Throw away the equality we just deleted.
         lastequality = @"";
@@ -1723,13 +1720,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         // Duplicate record.
         [diffs insertObject:[Diff diffWithOperation:DIFF_DELETE andText:lastequality] atIndex:equalitiesLastValue];
         // Change second copy to insert.
-        // Hash values for objects must not change while in a collection.
         indexToChange = equalitiesLastValue + 1;
-        diffToChange = [[diffs objectAtIndex:indexToChange] retain];
-        [diffs replaceObjectAtIndex:indexToChange withObject:[NSNull null]];
+        diffToChange = [diffs objectAtIndex:indexToChange];
+        // The following assumes, that the diff we are changing is currently not used in a collection where its hash determines its position (e.g. a dictionary)
         diffToChange.operation = DIFF_INSERT;
-        [diffs replaceObjectAtIndex:indexToChange withObject:diffToChange];
-        [diffToChange release];
 
         // Throw away the equality we just deleted.
         diff_CFArrayRemoveLastValue(equalities);
