@@ -1551,7 +1551,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         }
         NSString *text;
         NSRange text1Range = NSMakeRange(0, text1.length);
-        if (NSLocationInRange(thisPointer, text1Range) && NSLocationInRange(thisPointer+(NSUInteger)n, text1Range)) {
+        if (NSLocationInRange(thisPointer, text1Range) && NSLocationInRange(thisPointer+(NSUInteger)n-1, text1Range)) {
           text = [text1 substringWithRange:NSMakeRange(thisPointer, (NSUInteger)n)];
           thisPointer += (NSUInteger)n;
         }
