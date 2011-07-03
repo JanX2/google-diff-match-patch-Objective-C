@@ -1714,6 +1714,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
       } else {
         length_deletions2 += thisDiff.text.length;
       }
+      // Eliminate an equality that is smaller or equal to the edits on both
+      // sides of it.
       if (lastequality != nil
           && (lastequality.length <= MAX(length_insertions1, length_deletions1))
           && (lastequality.length <= MAX(length_insertions2, length_deletions2))) {
@@ -1752,15 +1754,17 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   [self diff_cleanupSemanticLossless:diffs];
 
   // Find any overlaps between deletions and insertions.
-  // e.g: <del>abcxx</del><ins>xxdef</ins>
-  //   -> <del>abc</del>xx<ins>def</ins>
+  // e.g: <del>abcxxx</del><ins>xxxdef</ins>
+  //   -> <del>abc</del>xxx<ins>def</ins>
+  // Only extract an overlap if it is as big as the edit ahead or behind it.
   thisPointer = 1;
   while (thisPointer < diffs.count) {
     if (prevDiff.operation == DIFF_DELETE && thisDiff.operation == DIFF_INSERT) {
       NSString *deletion = prevDiff.text;
       NSString *insertion = thisDiff.text;
       NSUInteger overlap_length = (NSUInteger)diff_commonOverlap((CFStringRef)deletion, (CFStringRef)insertion);
-      if (overlap_length != 0) {
+      if (overlap_length >= deletion.length / 2.0f ||
+          overlap_length >= insertion.length / 2.0f) {
         // Overlap found.
         // Insert an equality and trim the surrounding edits.
         [diffs insertObject:[Diff diffWithOperation:DIFF_EQUAL
