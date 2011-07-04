@@ -25,6 +25,16 @@
 #import <DiffMatchPatch/DiffMatchPatch.h>
 #import "TestUtilities.h"
 
+void diff_measureTimeForDiff(DiffMatchPatch *dmp, NSString *text1, NSString *text2, NSString *aDescription);
+
+void diff_measureTimeForDiff(DiffMatchPatch *dmp, NSString *text1, NSString *text2, NSString *aDescription) {
+  NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+  [dmp diff_mainOfOldString:text1 andNewString:text2];
+  NSTimeInterval duration = [NSDate timeIntervalSinceReferenceDate] - start;
+  
+  NSLog(@"%@Elapsed time: %.4lf", aDescription, (double)duration);
+}  
+
 int main (int argc, const char * argv[]) {
   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
@@ -44,13 +54,23 @@ int main (int argc, const char * argv[]) {
   DiffMatchPatch *dmp = [DiffMatchPatch new];
   dmp.Diff_Timeout = 0;
 
-  NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-  [dmp diff_mainOfOldString:text1 andNewString:text2];
-  NSTimeInterval duration = [NSDate timeIntervalSinceReferenceDate] - start;
+  NSString *aDescription;
+
+#ifdef ENABLE_PERFORMANCE_TABLE_OUTPUT
+  NSUInteger limit;
+  for (int i = 8; i <= 24; i++) {
+    limit = pow(2.0, i);
+    if (limit > text1.length || limit > text2.length) break;
+    
+    aDescription = [NSString stringWithFormat:@"%8lu unichars, ", (unsigned long)limit];
+    diff_measureTimeForDiff(dmp, [text1 substringToIndex:limit], [text2 substringToIndex:limit], aDescription);
+  }
+#endif
+
+  aDescription = [NSString stringWithFormat:@"%8lu unichars, ", (unsigned long)MAX(text1.length, text2.length)];
+  diff_measureTimeForDiff(dmp, text1, text2, aDescription);
 
   [dmp release];
-
-  NSLog(@"Elapsed time: %.4lf", (double)duration);
 
   [pool drain];
   return 0;
