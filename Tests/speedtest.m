@@ -23,17 +23,23 @@
 #import <Foundation/Foundation.h>
 
 #import <DiffMatchPatch/DiffMatchPatch.h>
+#import "TestUtilities.h"
 
 int main (int argc, const char * argv[]) {
   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
-  NSString *text1 = [NSString stringWithContentsOfFile:@"Speedtest1.txt"
-                        encoding:NSUTF8StringEncoding
-                           error:NULL];
+  NSString *text1FilePath = @"Speedtest1.txt";
+  NSString *text2FilePath = @"Speedtest2.txt";
 
-  NSString *text2 = [NSString stringWithContentsOfFile:@"Speedtest2.txt"
-                        encoding:NSUTF8StringEncoding
-                           error:NULL];
+  NSArray *cliArguments = [[NSProcessInfo processInfo] arguments];
+  
+  if ([cliArguments count] == 3) {
+    text1FilePath = [cliArguments objectAtIndex:1];
+    text2FilePath = [cliArguments objectAtIndex:2];
+  }
+
+  NSString *text1 = diff_stringForFilePath(text1FilePath);
+  NSString *text2 = diff_stringForFilePath(text2FilePath);
 
   DiffMatchPatch *dmp = [DiffMatchPatch new];
   dmp.Diff_Timeout = 0;

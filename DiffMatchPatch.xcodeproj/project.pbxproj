@@ -23,6 +23,8 @@
 		3DA64278128DE8C900B33CE9 /* DiffMatchPatchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */; };
 		3DC87026129FF4B6001F602B /* NSString+JavaSubstring.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DC87024129FF4B6001F602B /* NSString+JavaSubstring.m */; };
 		3DEE4C73129D484D00885485 /* NSMutableDictionary+DMPExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DEE4C71129D484D00885485 /* NSMutableDictionary+DMPExtensions.m */; };
+		3DFF2F3813C2105300DC564A /* TestUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFF2F3713C2105300DC564A /* TestUtilities.m */; };
+		3DFF2F3913C2105300DC564A /* TestUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFF2F3713C2105300DC564A /* TestUtilities.m */; };
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
@@ -81,6 +83,8 @@
 		3DC87024129FF4B6001F602B /* NSString+JavaSubstring.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+JavaSubstring.m"; sourceTree = "<group>"; };
 		3DEE4C70129D484D00885485 /* NSMutableDictionary+DMPExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+DMPExtensions.h"; sourceTree = "<group>"; };
 		3DEE4C71129D484D00885485 /* NSMutableDictionary+DMPExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+DMPExtensions.m"; sourceTree = "<group>"; };
+		3DFF2F3613C2105300DC564A /* TestUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtilities.h; sourceTree = "<group>"; };
+		3DFF2F3713C2105300DC564A /* TestUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtilities.m; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DiffMatchPatch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -236,6 +240,8 @@
 				3D5BC0B0128CA8E200B8F5FF /* DiffMatchPatchTest-Info.plist */,
 				3D5BC0DD128CAAE400B8F5FF /* DiffMatchPatchTest.h */,
 				3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */,
+				3DFF2F3613C2105300DC564A /* TestUtilities.h */,
+				3DFF2F3713C2105300DC564A /* TestUtilities.m */,
 				3D96F43E12AFC76600C3E5C0 /* speedtest_Prefix.pch */,
 				3D96F44912AFC82F00C3E5C0 /* speedtest.m */,
 				3D03489A135F75770051FE16 /* mode-test.m */,
@@ -400,6 +406,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D03489B135F75770051FE16 /* mode-test.m in Sources */,
+				3DFF2F3913C2105300DC564A /* TestUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -416,6 +423,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D96F44A12AFC82F00C3E5C0 /* speedtest.m in Sources */,
+				3DFF2F3813C2105300DC564A /* TestUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

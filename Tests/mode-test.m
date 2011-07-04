@@ -23,6 +23,7 @@
 #import <Foundation/Foundation.h>
 
 #import <DiffMatchPatch/DiffMatchPatch.h>
+#import "TestUtilities.h"
 
 
 typedef enum {
@@ -37,8 +38,6 @@ typedef enum {
 
 NSMutableArray * diff_defaultMode(NSString *text1, NSString *text2);
 NSMutableArray * diff_withMode(NSString *text1, NSString *text2, DiffMode mode);
-
-NSString * diff_stringForURL(NSURL *aURL);
 
 NSMutableArray * diff_withMode(NSString *text1, NSString *text2, DiffMode mode) {
   DiffMatchPatch *dmp = [DiffMatchPatch new];
@@ -108,44 +107,21 @@ NSMutableArray * diff_defaultMode(NSString *text1, NSString *text2) {
   return diffs;
 }
 
-NSString * diff_stringForURL(NSURL *aURL) {
-  NSDictionary *documentOptions = [NSDictionary dictionary];
-  NSDictionary *documentAttributes;
-  NSError *error;
-  NSAttributedString *attributedString = [[NSAttributedString alloc]
-                                          initWithURL:aURL
-                                          options:documentOptions
-                                          documentAttributes:&documentAttributes error:&error];
-  if (!attributedString) {
-    NSLog(@"%@", error);
-  }
-  
-  NSString *string = [attributedString string];
-
-  [attributedString release];
-  
-  return string;
-}
-
 
 int main (int argc, const char * argv[]) {
   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
   
-  if ([[[NSProcessInfo processInfo] arguments] count] < 3) {
+  NSArray *cliArguments = [[NSProcessInfo processInfo] arguments];
+  
+  if ([cliArguments count] < 3) {
     fprintf(stderr, "usage: %s <txt1> <txt2> [default|line|word|paragraph|sentence|line-break-delimitered]\n",
             [[[NSProcessInfo processInfo] processName] UTF8String]);
     [pool drain];
     return EXIT_FAILURE;
   }
 
-  NSString *rawFilePath1 = [[[NSProcessInfo processInfo] arguments] objectAtIndex:1];
-  NSString *rawFilePath2 = [[[NSProcessInfo processInfo] arguments] objectAtIndex:2];
-
-  NSURL *fileURL1 = [NSURL fileURLWithPath:rawFilePath1];
-  NSURL *fileURL2 = [NSURL fileURLWithPath:rawFilePath2];
-  
-  NSString *text1 = diff_stringForURL(fileURL1);
-  NSString *text2 = diff_stringForURL(fileURL2);
+  NSString *text1 = diff_stringForFilePath([cliArguments objectAtIndex:1]);
+  NSString *text2 = diff_stringForFilePath([cliArguments objectAtIndex:2]);
   
   if (text1 == nil || text2 == nil) {
     return EXIT_FAILURE;
@@ -154,8 +130,8 @@ int main (int argc, const char * argv[]) {
   NSMutableArray *diffs;
   DiffMode mode = DiffDefaultMode;
   
-  if ([[[NSProcessInfo processInfo] arguments] count] >= 4) {
-    NSString *modeString = [[[NSProcessInfo processInfo] arguments] objectAtIndex:3];
+  if ([cliArguments count] >= 4) {
+    NSString *modeString = [cliArguments objectAtIndex:3];
     
     if ([modeString isEqualToString:@"line"]) {
       mode = DiffLineMode;
