@@ -971,15 +971,15 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     case DiffWordTokens:
       tokenizerOptions = kCFStringTokenizerUnitWordBoundary;
       break;
-    case DiffParagraphTokens:
-      tokenizerOptions = kCFStringTokenizerUnitParagraph;
-      break;
     case DiffSentenceTokens:
       tokenizerOptions = kCFStringTokenizerUnitSentence;
       break;
     case DiffLineBreakDelimiteredTokens:
-    default:
       tokenizerOptions = kCFStringTokenizerUnitLineBreak;
+      break;
+    case DiffParagraphTokens:
+    default:
+      tokenizerOptions = kCFStringTokenizerUnitParagraph;
       break;
   }
   
