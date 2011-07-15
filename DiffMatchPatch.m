@@ -780,7 +780,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     for (CFIndex k1 = -d + k1start; k1 <= d - k1end; k1 += 2) {
       CFIndex k1_offset = v_offset + k1;
       CFIndex x1;
-      if (k1 == -d || k1 != d && v1[k1_offset - 1] < v1[k1_offset + 1]) {
+      if ( k1 == -d || (k1 != d && v1[k1_offset - 1] < v1[k1_offset + 1]) ) {
         x1 = v1[k1_offset + 1];
       } else {
         x1 = v1[k1_offset - 1] + 1;
@@ -821,7 +821,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     for (CFIndex k2 = -d + k2start; k2 <= d - k2end; k2 += 2) {
       CFIndex k2_offset = v_offset + k2;
       CFIndex x2;
-      if (k2 == -d || k2 != d && v2[k2_offset - 1] < v2[k2_offset + 1]) {
+      if ( k2 == -d || (k2 != d && v2[k2_offset - 1] < v2[k2_offset + 1]) ) {
         x2 = v2[k2_offset + 1];
       } else {
         x2 = v2[k2_offset - 1] + 1;
