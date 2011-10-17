@@ -437,7 +437,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  * This speedup can produce non-minimal diffs.
  * @param text1 First NSString.
  * @param text2 Second NSString.
- * @return Five element String array, containing the prefix of text1, the
+ * @return Five element NSString array, containing the prefix of text1, the
  *     suffix of text1, the prefix of text2, the suffix of text2 and the
  *     common middle.   Or NULL if there was no match.
  */
