@@ -369,15 +369,15 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
   // Trim off common prefix (speedup).
   NSUInteger commonlength = (NSUInteger)diff_commonPrefix((CFStringRef)text1, (CFStringRef)text2);
-  NSString *commonprefix = [text1 substringWithRange:NSMakeRange(0, commonlength)];
+  NSString *commonprefix = [text1 substringToIndex:commonlength];
   text1 = [text1 substringFromIndex:commonlength];
   text2 = [text2 substringFromIndex:commonlength];
 
   // Trim off common suffix (speedup).
   commonlength = (NSUInteger)diff_commonSuffix((CFStringRef)text1, (CFStringRef)text2);
   NSString *commonsuffix = [text1 substringFromIndex:text1.length - commonlength];
-  text1 = [text1 substringWithRange:NSMakeRange(0, text1.length - commonlength)];
-  text2 = [text2 substringWithRange:NSMakeRange(0, text2.length - commonlength)];
+  text1 = [text1 substringToIndex:(text1.length - commonlength)];
+  text2 = [text2 substringToIndex:(text2.length - commonlength)];
 
   // Compute the diff on the middle block.
   diffs = [self diff_computeFromOldString:text1 andNewString:text2 checkLines:checklines deadline:deadline];
