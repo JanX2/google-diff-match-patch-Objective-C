@@ -369,8 +369,6 @@ CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CF
   CFStringRef best_longtext_a = CFSTR(""), best_longtext_b = CFSTR("");
   CFStringRef best_shorttext_a = CFSTR(""), best_shorttext_b = CFSTR("");
 
-  CFStringRef best_common_part1, best_common_part2;
-
   CFStringRef longtext_substring, shorttext_substring;
   CFIndex shorttext_length = CFStringGetLength(shorttext);
   CFRange resultRange;
@@ -407,13 +405,7 @@ CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CF
       CFRelease(best_shorttext_a);
       CFRelease(best_shorttext_b);
 
-      best_common_part1 = diff_CFStringCreateSubstring(shorttext, j - suffixLength, suffixLength);
-      best_common_part2 = diff_CFStringCreateSubstring(shorttext, j, prefixLength);
-
-      best_common = diff_CFStringCreateByCombiningTwoStrings(best_common_part1, best_common_part2);
-
-      CFRelease(best_common_part1);
-      CFRelease(best_common_part2);
+      best_common = diff_CFStringCreateSubstring(shorttext, j - suffixLength, suffixLength + prefixLength);
 
       best_longtext_a = diff_CFStringCreateLeftSubstring(longtext, i - suffixLength);
       best_longtext_b = diff_CFStringCreateSubstringWithStartIndex(longtext, i + prefixLength);
