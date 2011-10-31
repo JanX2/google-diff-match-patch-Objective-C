@@ -36,7 +36,6 @@ CFRange diff_LeftSubstringRange(CFIndex new_length);
 CFStringRef diff_CFStringCreateLeftSubstring(CFStringRef text, CFIndex new_length);
 CFStringRef diff_CFStringCreateSubstringWithStartIndex(CFStringRef text, CFIndex start_index);
 CFStringRef diff_CFStringCreateJavaSubstring(CFStringRef s, CFIndex begin, CFIndex end);
-CFStringRef diff_CFStringCreateByCombiningTwoStrings(CFStringRef best_common_part1, CFStringRef best_common_part2);
 Boolean diff_regExMatch(CFStringRef text, const regex_t *re);
 
 CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CFIndex i);
@@ -87,15 +86,6 @@ CFStringRef diff_CFStringCreateSubstringWithStartIndex(CFStringRef text, CFIndex
 
 CFStringRef diff_CFStringCreateJavaSubstring(CFStringRef s, CFIndex begin, CFIndex end) {
   return diff_CFStringCreateSubstring(s, begin, end - begin);
-}
-
-CFStringRef diff_CFStringCreateByCombiningTwoStrings(CFStringRef best_common_part1, CFStringRef best_common_part2) {
-  CFIndex best_common_length;
-  CFMutableStringRef best_common_mutable;
-  best_common_length = CFStringGetLength(best_common_part1) + CFStringGetLength(best_common_part2);
-  best_common_mutable = CFStringCreateMutableCopy(kCFAllocatorDefault, best_common_length, best_common_part1);
-  CFStringAppend(best_common_mutable, best_common_part2);
-  return best_common_mutable;
 }
 
 Boolean diff_regExMatch(CFStringRef text, const regex_t *re) {
