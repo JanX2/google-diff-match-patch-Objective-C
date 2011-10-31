@@ -238,7 +238,7 @@ CFIndex diff_commonOverlap(CFStringRef text1, CFStringRef text2) {
 
   CFIndex text_length = MIN(text1_length, text2_length);
   // Quick check for the worst case.
-  if (text1_trunc == text2_trunc) {
+  if (CFStringCompare(text1_trunc, text2_trunc, 0) == kCFCompareEqualTo) {
     common_overlap = text_length;
   } else {
     // Start by looking for a single character match
