@@ -22,8 +22,6 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 
-#import "DiffMatchPatch.h"
-
 
 @interface DiffMatchPatchTest : SenTestCase {
 
