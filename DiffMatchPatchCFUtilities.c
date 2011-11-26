@@ -598,7 +598,7 @@ CFStringRef diff_lineBreakDelimiteredToCharsMungeCFStringCreate(CFStringRef text
 /**
  * Given two strings, compute a score representing whether the internal
  * boundary falls on logical boundaries.
- * Scores range from 5 (best) to 0 (worst).
+ * Scores range from 6 (best) to 0 (worst).
  * @param one First CFStringRef.
  * @param two Second CFStringRef.
  * @return The score.
@@ -616,6 +616,7 @@ CFIndex diff_cleanupSemanticScore(CFStringRef one, CFStringRef two) {
     whiteSpaceSet = CFCharacterSetGetPredefined(kCFCharacterSetWhitespaceAndNewline);
     controlSet = CFCharacterSetGetPredefined(kCFCharacterSetControl);
 
+    // Define some regex patterns for matching boundaries.
     int status;
     status = regcomp(&blankLineEndRegEx, "\n\r?\n$", REG_EXTENDED | REG_NOSUB);
     check(status == 0);
@@ -625,10 +626,9 @@ CFIndex diff_cleanupSemanticScore(CFStringRef one, CFStringRef two) {
     firstRun = false;
   }
 
-
   if (CFStringGetLength(one) == 0 || CFStringGetLength(two) == 0) {
     // Edges are the best.
-    return 5;
+    return 6;
   }
 
   // Each port of this function behaves slightly differently due to
@@ -636,28 +636,42 @@ CFIndex diff_cleanupSemanticScore(CFStringRef one, CFStringRef two) {
   // 'whitespace'.  Since this function's purpose is largely cosmetic,
   // the choice has been made to use each language's native features
   // rather than force total conformity.
-  CFIndex score = 0;
-  UniChar lastCharOfStringOne = CFStringGetCharacterAtIndex(one, (CFStringGetLength(one) - 1));
-  UniChar firstCharOfStringTwo = CFStringGetCharacterAtIndex(two, 0);
-  // One point for non-alphanumeric.
-  if (!CFCharacterSetIsCharacterMember(alphaNumericSet, lastCharOfStringOne)
-      || !CFCharacterSetIsCharacterMember(alphaNumericSet, firstCharOfStringTwo)) {
-    score++;
+  UniChar char1 =
+  CFStringGetCharacterAtIndex(one, (CFStringGetLength(one) - 1));
+  UniChar char2 =
+  CFStringGetCharacterAtIndex(two, 0);
+  Boolean nonAlphaNumeric1 =
+  !CFCharacterSetIsCharacterMember(alphaNumericSet, char1);
+  Boolean nonAlphaNumeric2 =
+  !CFCharacterSetIsCharacterMember(alphaNumericSet, char2);
+  Boolean whitespace1 =
+  nonAlphaNumeric1 && CFCharacterSetIsCharacterMember(whiteSpaceSet, char1);
+  Boolean whitespace2 =
+  nonAlphaNumeric2 && CFCharacterSetIsCharacterMember(whiteSpaceSet, char2);
+  Boolean lineBreak1 =
+  whitespace1 && CFCharacterSetIsCharacterMember(controlSet, char1);
+  Boolean lineBreak2 =
+  whitespace2 && CFCharacterSetIsCharacterMember(controlSet, char2);
+  Boolean blankLine1 =
+  lineBreak1 && diff_regExMatch(one, &blankLineEndRegEx);
+  Boolean blankLine2 =
+  lineBreak2 && diff_regExMatch(two, &blankLineStartRegEx);
+  
+  if (blankLine1 || blankLine2) {
+    // Five points for blank lines.
+    return 5;
+  } else if (lineBreak1 || lineBreak2) {
+    // Four points for line breaks.
+    return 4;
+  } else if (nonAlphaNumeric1 && !whitespace1 && whitespace2) {
+    // Three points for end of sentences.
+    return 3;
+  } else if (whitespace1 || whitespace2) {
     // Two points for whitespace.
-    if (CFCharacterSetIsCharacterMember(whiteSpaceSet, lastCharOfStringOne)
-        || CFCharacterSetIsCharacterMember(whiteSpaceSet, firstCharOfStringTwo)) {
-      score++;
-      // Three points for line breaks.
-      if (CFCharacterSetIsCharacterMember(controlSet, lastCharOfStringOne)
-          || CFCharacterSetIsCharacterMember(controlSet, firstCharOfStringTwo)) {
-        score++;
-        // Four points for blank lines.
-        if (diff_regExMatch(one, &blankLineEndRegEx)
-            || diff_regExMatch(two, &blankLineStartRegEx)) {
-          score++;
-        }
-      }
-    }
+    return 2;
+  } else if (nonAlphaNumeric1 || nonAlphaNumeric2) {
+    // One point for non-alphanumeric.
+    return 1;
   }
-  return score;
+  return 0;
 }

@@ -1275,7 +1275,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 /**
  * Given two strings, comAdde a score representing whether the internal
  * boundary falls on logical boundaries.
- * Scores range from 5 (best) to 0 (worst).
+ * Scores range from 6 (best) to 0 (worst).
  * @param one First string.
  * @param two Second string.
  * @return The score.
