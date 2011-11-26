@@ -571,6 +571,17 @@
                     [Diff diffWithOperation:DIFF_INSERT andText:@"def"], nil];
   STAssertEqualObjects(expectedResult, diffs, @"Overlap elimination.");
   
+  // Reverse overlap elimination.
+  diffs = [NSMutableArray arrayWithObjects:
+           [Diff diffWithOperation:DIFF_DELETE andText:@"xxxabc"],
+           [Diff diffWithOperation:DIFF_INSERT andText:@"defxxx"], nil];
+  [dmp diff_cleanupSemantic:diffs];
+  expectedResult = [NSMutableArray arrayWithObjects:
+                    [Diff diffWithOperation:DIFF_INSERT andText:@"def"],
+                    [Diff diffWithOperation:DIFF_EQUAL andText:@"xxx"],
+                    [Diff diffWithOperation:DIFF_DELETE andText:@"abc"], nil];
+  STAssertEqualObjects(expectedResult, diffs, @"Reverse overlap elimination.");
+  
   // Two overlap eliminations.
   diffs = [NSMutableArray arrayWithObjects:
            [Diff diffWithOperation:DIFF_DELETE andText:@"abcd1212"],
