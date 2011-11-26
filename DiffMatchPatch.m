@@ -330,7 +330,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   } else {
     deadline = [[NSDate dateWithTimeIntervalSinceNow:Diff_Timeout] timeIntervalSinceReferenceDate];
   }
-  return [self diff_mainOfOldString:text1 andNewString:text2 checkLines:YES deadline:deadline];
+  return [self diff_mainOfOldString:text1 andNewString:text2 checkLines:checklines deadline:deadline];
 }
 
 /**
