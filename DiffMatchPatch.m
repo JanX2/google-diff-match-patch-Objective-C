@@ -1922,11 +1922,11 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
       }
       if (d == 0) {
         // First pass: exact match.
-        rd[j] = ((rd[j + 1] << 1) | 1) & charMatch;
+        rd[j] = (((rd[j + 1] << 1) | 1) & charMatch);
       } else {
         // Subsequent passes: fuzzy match.
-        rd[j] = ((rd[j + 1] << 1) | 1) & charMatch
-            | (((last_rd[j + 1] | last_rd[j]) << 1) | 1) | last_rd[j + 1];
+        rd[j] = (((rd[j + 1] << 1) | 1) & charMatch)
+                | (((last_rd[j + 1] | last_rd[j]) << 1) | 1) | last_rd[j + 1];
       }
       if ((rd[j] & matchmask) != 0) {
         double score = [self match_bitapScoreForErrorCount:d location:(j - 1) near:loc pattern:pattern];
