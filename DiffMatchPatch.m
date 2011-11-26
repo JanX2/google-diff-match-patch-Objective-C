@@ -1749,6 +1749,13 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   }
   [self diff_cleanupSemanticLossless:diffs];
 
+  // Jan: someDiff.text will NOT retain and autorelease the NSString object.
+  // This is why “prevDiff.text = ” below can cause it’s previous value to be deallocated 
+  // instead of just released as one would expect without taking the above into account. 
+  // Thus we need to retain its previous value before “prevDiff.text = ” and release afterwards.
+  // Alternatively, we could remove the nonatomic from the “text” @property definition.
+  // This would cause much more of a perfomance hit then warranted, though.
+
   // Find any overlaps between deletions and insertions.
   // e.g: <del>abcxxx</del><ins>xxxdef</ins>
   //   -> <del>abc</del>xxx<ins>def</ins>
@@ -1770,8 +1777,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
           [diffs insertObject:[Diff diffWithOperation:DIFF_EQUAL
                                               andText:[insertion substringToIndex:overlap_length1]]
                       atIndex:thisPointer];
+          [insertion retain];
           prevDiff.text = [deletion substringToIndex:(deletion.length - overlap_length1)];
           nextDiff.text = [insertion substringFromIndex:overlap_length1];
+          [insertion release];
           thisPointer++;
         }
       } else {
@@ -1782,10 +1791,12 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
           [diffs insertObject:[Diff diffWithOperation:DIFF_EQUAL
                                               andText:[deletion substringToIndex:overlap_length2]]
                       atIndex:thisPointer];
+          [deletion retain];
           prevDiff.operation = DIFF_INSERT;
           prevDiff.text = [insertion substringToIndex:(insertion.length - overlap_length2)];
           nextDiff.operation = DIFF_DELETE;
           nextDiff.text = [deletion substringFromIndex:overlap_length2];
+          [deletion release];
           thisPointer++;
         }
       }
