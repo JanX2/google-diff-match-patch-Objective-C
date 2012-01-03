@@ -61,7 +61,6 @@
 		3D03489A135F75770051FE16 /* mode-test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "mode-test.m"; sourceTree = "<group>"; };
 		3D08D25112A71B9C007A5316 /* NSString+UnicharUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UnicharUtilities.h"; sourceTree = "<group>"; };
 		3D08D25212A71B9C007A5316 /* NSString+UnicharUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UnicharUtilities.m"; sourceTree = "<group>"; };
-		3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Base+SnowLeopard.xcconfig"; sourceTree = "<group>"; };
 		3D510E1012BEBA44008C7CE7 /* Base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		3D510E1112BEBA44008C7CE7 /* Version.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		3D5BC07E128C44A700B8F5FF /* DiffMatchPatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch.h; sourceTree = "<group>"; };
@@ -225,7 +224,6 @@
 			children = (
 				3D510E1112BEBA44008C7CE7 /* Version.xcconfig */,
 				3D510E1012BEBA44008C7CE7 /* Base.xcconfig */,
-				3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */,
 			);
 			indentWidth = 2;
 			path = Configurations;
@@ -554,25 +552,6 @@
 			};
 			name = Debug;
 		};
-		3D034891135F75460051FE16 /* Debug 10.6 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				INSTALL_PATH = /usr/local/bin;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PRODUCT_NAME = "mode-test";
-			};
-			name = "Debug 10.6";
-		};
 		3D034892135F75460051FE16 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -593,175 +572,6 @@
 				ZERO_LINK = NO;
 			};
 			name = Release;
-		};
-		3D034893135F75460051FE16 /* Release 10.6 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				INSTALL_PATH = /usr/local/bin;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PRODUCT_NAME = "mode-test";
-			};
-			name = "Release 10.6";
-		};
-		3D105A0C12DA601C002111E1 /* Debug 10.6 */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */;
-			buildSettings = {
-				GCC_ENABLE_OBJC_GC = supported;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_WARN_UNINITIALIZED_AUTOS = NO;
-				ONLY_ACTIVE_ARCH = YES;
-			};
-			name = "Debug 10.6";
-		};
-		3D105A0D12DA601C002111E1 /* Debug 10.6 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = DiffMatchPatch_Prefix.pch;
-				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "@rpath";
-				PRODUCT_NAME = DiffMatchPatch;
-				WRAPPER_EXTENSION = framework;
-			};
-			name = "Debug 10.6";
-		};
-		3D105A0E12DA601C002111E1 /* Debug 10.6 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
-				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
-				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-					"-framework",
-					SenTestingKit,
-				);
-				PRODUCT_NAME = DiffMatchPatchTest;
-				WRAPPER_EXTENSION = octest;
-			};
-			name = "Debug 10.6";
-		};
-		3D105A0F12DA601C002111E1 /* Debug 10.6 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = speedtest_Prefix.pch;
-				INSTALL_PATH = /usr/local/bin;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PRODUCT_NAME = speedtest;
-			};
-			name = "Debug 10.6";
-		};
-		3D105A1012DA6024002111E1 /* Release 10.6 */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */;
-			buildSettings = {
-				GCC_ENABLE_OBJC_GC = supported;
-			};
-			name = "Release 10.6";
-		};
-		3D105A1112DA6024002111E1 /* Release 10.6 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = DiffMatchPatch_Prefix.pch;
-				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "@rpath";
-				PRODUCT_NAME = DiffMatchPatch;
-				WRAPPER_EXTENSION = framework;
-			};
-			name = "Release 10.6";
-		};
-		3D105A1212DA6024002111E1 /* Release 10.6 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
-				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
-				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-					"-framework",
-					SenTestingKit,
-				);
-				PRODUCT_NAME = DiffMatchPatchTest;
-				WRAPPER_EXTENSION = octest;
-				ZERO_LINK = NO;
-			};
-			name = "Release 10.6";
-		};
-		3D105A1312DA6024002111E1 /* Release 10.6 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = speedtest_Prefix.pch;
-				INSTALL_PATH = /usr/local/bin;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PRODUCT_NAME = speedtest;
-				ZERO_LINK = NO;
-			};
-			name = "Release 10.6";
 		};
 		3D5BC0B1128CA8E500B8F5FF /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -863,56 +673,46 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB91AE08733DA50010E9CD /* Debug */,
-				3D105A0D12DA601C002111E1 /* Debug 10.6 */,
 				1DEB91AF08733DA50010E9CD /* Release */,
-				3D105A1112DA6024002111E1 /* Release 10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Release 10.6";
+			defaultConfigurationName = Debug;
 		};
 		1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "DiffMatchPatch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB91B208733DA50010E9CD /* Debug */,
-				3D105A0C12DA601C002111E1 /* Debug 10.6 */,
 				1DEB91B308733DA50010E9CD /* Release */,
-				3D105A1012DA6024002111E1 /* Release 10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Release 10.6";
+			defaultConfigurationName = Debug;
 		};
 		3D034899135F75640051FE16 /* Build configuration list for PBXNativeTarget "mode-test" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3D034890135F75460051FE16 /* Debug */,
-				3D034891135F75460051FE16 /* Debug 10.6 */,
 				3D034892135F75460051FE16 /* Release */,
-				3D034893135F75460051FE16 /* Release 10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Release 10.6";
+			defaultConfigurationName = Debug;
 		};
 		3D5BC0B3128CA8E500B8F5FF /* Build configuration list for PBXNativeTarget "DiffMatchPatchTest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3D5BC0B1128CA8E500B8F5FF /* Debug */,
-				3D105A0E12DA601C002111E1 /* Debug 10.6 */,
 				3D5BC0B2128CA8E500B8F5FF /* Release */,
-				3D105A1212DA6024002111E1 /* Release 10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Release 10.6";
+			defaultConfigurationName = Debug;
 		};
 		3D96F3B512AFC68E00C3E5C0 /* Build configuration list for PBXNativeTarget "speedtest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3D96F3A412AFC68B00C3E5C0 /* Debug */,
-				3D105A0F12DA601C002111E1 /* Debug 10.6 */,
 				3D96F3A512AFC68B00C3E5C0 /* Release */,
-				3D105A1312DA6024002111E1 /* Release 10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Release 10.6";
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
