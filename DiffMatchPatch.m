@@ -728,8 +728,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 {
 #define text1CharacterAtIndex(A)  text1_chars[(A)]
 #define text2CharacterAtIndex(A)  text2_chars[(A)]
-#define freeTextBuffers()  if (text1_buffer != NULL) free(text1_buffer);\
-                           if (text2_buffer != NULL) free(text2_buffer);
+#define freeBuffers()  if (text1_buffer != NULL) free(text1_buffer);\
+                       if (text2_buffer != NULL) free(text2_buffer);\
+                       free(v1);\
+                       free(v2);
 
   CFStringRef text1 = (CFStringRef)_text1;
   CFStringRef text2 = (CFStringRef)_text2;
@@ -740,8 +742,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   CFIndex max_d = (text1_length + text2_length + 1) / 2;
   CFIndex v_offset = max_d;
   CFIndex v_length = 2 * max_d;
-  CFIndex v1[v_length];
-  CFIndex v2[v_length];
+  CFIndex *v1 = malloc(v_length * sizeof(CFIndex));
+  CFIndex *v2 = malloc(v_length * sizeof(CFIndex));
   for (CFIndex x = 0; x < v_length; x++) {
     v1[x] = -1;
     v2[x] = -1;
@@ -804,7 +806,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
           // Mirror x2 onto top-left coordinate system.
           CFIndex x2 = text1_length - v2[k2_offset];
           if (x1 >= x2) {
-            freeTextBuffers();
+            freeBuffers();
 
             // Overlap detected.
             return [self diff_bisectSplitOfOldString:_text1
@@ -849,7 +851,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
           x2 = text1_length - x2;
           if (x1 >= x2) {
             // Overlap detected.
-            freeTextBuffers();
+            freeBuffers();
 
             return [self diff_bisectSplitOfOldString:_text1
                                         andNewString:_text2
@@ -862,7 +864,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     }
   }
 
-  freeTextBuffers();
+  freeBuffers();
 
   // Diff took too long and hit the deadline or
   // number of diffs equals number of characters, no commonality at all.
