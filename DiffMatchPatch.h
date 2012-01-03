@@ -148,7 +148,7 @@ typedef enum {
 - (NSMutableArray *)patch_makeFromDiffs:(NSMutableArray *)diffs;
 - (NSMutableArray *)patch_makeFromOldString:(NSString *)text1 newString:(NSString *)text2 diffs:(NSMutableArray *)diffs;
 - (NSMutableArray *)patch_makeFromOldString:(NSString *)text1 andDiffs:(NSMutableArray *)diffs;
-- (NSMutableArray *)patch_deepCopy:(NSArray *)patches; // Copy rule applies!
+- (NSMutableArray *)patch_deepCopiedPatches:(NSArray *)patches; // Copy rule applies!
 - (NSArray *)patch_apply:(NSArray *)sourcePatches toString:(NSString *)text;
 - (NSString *)patch_addPadding:(NSMutableArray *)patches;
 - (void)patch_splitMax:(NSMutableArray *)patches;

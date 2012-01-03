@@ -2257,7 +2257,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  * @param patches NSArray of patch objects.
  * @return NSMutableArray of patch objects.
  */
-- (NSMutableArray *)patch_deepCopy:(NSArray *)patches;
+- (NSMutableArray *)patch_deepCopiedPatches:(NSArray *)patches;
 {
   NSMutableArray *patchesCopy = [[NSMutableArray alloc] initWithArray:patches copyItems:YES];
   return [patchesCopy autorelease];
@@ -2279,7 +2279,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   }
 
   // Deep copy the patches so that no changes are made to originals.
-  NSMutableArray *patches = [self patch_deepCopy:sourcePatches];
+  NSMutableArray *patches = [self patch_deepCopiedPatches:sourcePatches];
 
   NSMutableString *textMutable = [[text mutableCopy] autorelease];
 
