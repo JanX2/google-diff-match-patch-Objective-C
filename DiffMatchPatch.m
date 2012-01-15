@@ -1120,11 +1120,11 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
           }
           // Delete the offending records and add the merged ones.
           if (count_delete == 0) {
-            splice(diffs, thisPointer - count_delete - count_insert,
+            splice(diffs, thisPointer - count_insert,
                 count_delete + count_insert,
                 [NSMutableArray arrayWithObject:[Diff diffWithOperation:DIFF_INSERT andText:text_insert]]);
           } else if (count_insert == 0) {
-            splice(diffs, thisPointer - count_delete - count_insert,
+            splice(diffs, thisPointer - count_delete,
                 count_delete + count_insert,
                 [NSMutableArray arrayWithObject:[Diff diffWithOperation:DIFF_DELETE andText:text_delete]]);
           } else {
@@ -1304,8 +1304,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   BOOL changes = NO;
   // Stack of indices where equalities are found.
   CFMutableArrayRef equalities = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
-  // Always equal to [diffs objectAtIndex:equalitiesLastValue].text
-  NSString *lastequality = @"";
+  // Always equal to equalities.lastObject.text
+  NSString *lastequality = nil;
   CFIndex thisPointer = 0;  // Index of current position.
   // Is there an insertion operation before the last equality.
   BOOL pre_ins = NO;
@@ -1330,7 +1330,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
       } else {
         // Not a candidate, and can never become one.
         CFArrayRemoveAllValues(equalities);
-        lastequality = @"";
+        lastequality = nil;
       }
       post_ins = post_del = NO;
     } else {  // An insertion or deletion.
@@ -1347,7 +1347,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
        * <ins>A</del>X<ins>C</ins><del>D</del>
        * <ins>A</ins><del>B</del>X<del>C</del>
        */
-      if ((lastequality.length != 0)
+      if ((lastequality != nil)
           && ((pre_ins && pre_del && post_ins && post_del)
           || ((lastequality.length < Diff_EditCost / 2)
           && ((pre_ins ? 1 : 0) + (pre_del ? 1 : 0) + (post_ins ? 1 : 0)
@@ -1362,7 +1362,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         diffToChange.operation = DIFF_INSERT;
 
         diff_CFArrayRemoveLastValue(equalities);   // Throw away the equality we just deleted.
-        lastequality = @"";
+        lastequality = nil;
         if (pre_ins && pre_del) {
           // No changes made which could affect previous entry, keep going.
           post_ins = post_del = YES;
@@ -2462,98 +2462,99 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 {
   NSUInteger patch_size = Match_MaxBits;
   for (NSUInteger x = 0; x < patches.count; x++) {
-    if (((Patch *)[patches objectAtIndex:x]).length1 > patch_size) {
-      Patch *bigpatch = [[patches objectAtIndex:x] retain];
-      // Remove the big old patch.
-      splice(patches, x--, 1, nil);
-      NSUInteger start1 = bigpatch.start1;
-      NSUInteger start2 = bigpatch.start2;
-      NSString *precontext = @"";
-      while (bigpatch.diffs.count != 0) {
-        // Create one of several smaller patches.
-        Patch *patch = [[Patch new] autorelease];
-        BOOL empty = YES;
-        patch.start1 = start1 - precontext.length;
-        patch.start2 = start2 - precontext.length;
-        if (precontext.length != 0) {
-          patch.length1 = patch.length2 = precontext.length;
-          [patch.diffs addObject:[Diff diffWithOperation:DIFF_EQUAL andText:precontext]];
-        }
-        while (bigpatch.diffs.count != 0
-            && patch.length1 < patch_size - self.Patch_Margin) {
-          Operation diff_type = ((Diff *)[bigpatch.diffs objectAtIndex:0]).operation;
-          NSString *diff_text = ((Diff *)[bigpatch.diffs objectAtIndex:0]).text;
-          if (diff_type == DIFF_INSERT) {
-            // Insertions are harmless.
+    if (((Patch *)[patches objectAtIndex:x]).length1 <= patch_size) {
+      continue;
+    }
+    Patch *bigpatch = [[patches objectAtIndex:x] retain];
+    // Remove the big old patch.
+    splice(patches, x--, 1, nil);
+    NSUInteger start1 = bigpatch.start1;
+    NSUInteger start2 = bigpatch.start2;
+    NSString *precontext = @"";
+    while (bigpatch.diffs.count != 0) {
+      // Create one of several smaller patches.
+      Patch *patch = [[Patch new] autorelease];
+      BOOL empty = YES;
+      patch.start1 = start1 - precontext.length;
+      patch.start2 = start2 - precontext.length;
+      if (precontext.length != 0) {
+        patch.length1 = patch.length2 = precontext.length;
+        [patch.diffs addObject:[Diff diffWithOperation:DIFF_EQUAL andText:precontext]];
+      }
+      while (bigpatch.diffs.count != 0
+             && patch.length1 < patch_size - self.Patch_Margin) {
+        Operation diff_type = ((Diff *)[bigpatch.diffs objectAtIndex:0]).operation;
+        NSString *diff_text = ((Diff *)[bigpatch.diffs objectAtIndex:0]).text;
+        if (diff_type == DIFF_INSERT) {
+          // Insertions are harmless.
+          patch.length2 += diff_text.length;
+          start2 += diff_text.length;
+          [patch.diffs addObject:[bigpatch.diffs objectAtIndex:0]];
+          [bigpatch.diffs removeObjectAtIndex:0];
+          empty = NO;
+        } else if (diff_type == DIFF_DELETE && patch.diffs.count == 1
+                   && ((Diff *)[patch.diffs objectAtIndex:0]).operation == DIFF_EQUAL
+                   && diff_text.length > 2 * patch_size) {
+          // This is a large deletion.  Let it pass in one chunk.
+          patch.length1 += diff_text.length;
+          start1 += diff_text.length;
+          empty = NO;
+          [patch.diffs addObject:[Diff diffWithOperation:diff_type andText:diff_text]];
+          [bigpatch.diffs removeObjectAtIndex:0];
+        } else {
+          // Deletion or equality.  Only take as much as we can stomach.
+          diff_text = [diff_text substringWithRange:NSMakeRange(0,
+                                                                MIN(diff_text.length,
+                                                                    (patch_size - patch.length1 - Patch_Margin)))];
+          patch.length1 += diff_text.length;
+          start1 += diff_text.length;
+          if (diff_type == DIFF_EQUAL) {
             patch.length2 += diff_text.length;
             start2 += diff_text.length;
-            [patch.diffs addObject:[bigpatch.diffs objectAtIndex:0]];
-            [bigpatch.diffs removeObjectAtIndex:0];
+          } else {
             empty = NO;
-          } else if (diff_type == DIFF_DELETE && patch.diffs.count == 1
-                && ((Diff *)[patch.diffs objectAtIndex:0]).operation == DIFF_EQUAL
-                && diff_text.length > 2 * patch_size) {
-            // This is a large deletion.  Let it pass in one chunk.
-            patch.length1 += diff_text.length;
-            start1 += diff_text.length;
-            empty = NO;
-            [patch.diffs addObject:[Diff diffWithOperation:diff_type andText:diff_text]];
+          }
+          [patch.diffs addObject:[Diff diffWithOperation:diff_type andText:diff_text]];
+          if (diff_text == ((Diff *)[bigpatch.diffs objectAtIndex:0]).text) {
             [bigpatch.diffs removeObjectAtIndex:0];
           } else {
-            // Deletion or equality.  Only take as much as we can stomach.
-            diff_text = [diff_text substringWithRange:NSMakeRange(0,
-                MIN(diff_text.length,
-                (patch_size - patch.length1 - Patch_Margin)))];
-            patch.length1 += diff_text.length;
-            start1 += diff_text.length;
-            if (diff_type == DIFF_EQUAL) {
-              patch.length2 += diff_text.length;
-              start2 += diff_text.length;
-            } else {
-              empty = NO;
-            }
-            [patch.diffs addObject:[Diff diffWithOperation:diff_type andText:diff_text]];
-            if (diff_text == ((Diff *)[bigpatch.diffs objectAtIndex:0]).text) {
-              [bigpatch.diffs removeObjectAtIndex:0];
-            } else {
-              Diff *firstDiff = [bigpatch.diffs objectAtIndex:0];
-              firstDiff.text = [firstDiff.text substringFromIndex:diff_text.length];
-            }
+            Diff *firstDiff = [bigpatch.diffs objectAtIndex:0];
+            firstDiff.text = [firstDiff.text substringFromIndex:diff_text.length];
           }
-        }
-        // Compute the head context for the next patch.
-        precontext = [self diff_text2:patch.diffs];
-        precontext = [precontext substringFromIndex:MAX_OF_CONST_AND_DIFF(0, precontext.length, Patch_Margin)];
-
-        NSString *postcontext = nil;
-        // Append the end context for this patch.
-        if ([self diff_text1:bigpatch.diffs].length > Patch_Margin) {
-          postcontext = [[self diff_text1:bigpatch.diffs]
-                         substringToIndex:Patch_Margin];
-        } else {
-          postcontext = [self diff_text1:bigpatch.diffs];
-        }
-
-        if (postcontext.length != 0) {
-          patch.length1 += postcontext.length;
-          patch.length2 += postcontext.length;
-          if (patch.diffs.count != 0
-              && ((Diff *)[patch.diffs objectAtIndex:(patch.diffs.count - 1)]).operation
-              == DIFF_EQUAL) {
-            Diff *lastDiff = [patch.diffs lastObject];
-            lastDiff.text = [lastDiff.text stringByAppendingString:postcontext];
-          } else {
-            [patch.diffs addObject:[Diff diffWithOperation:DIFF_EQUAL andText:postcontext]];
-          }
-        }
-        if (!empty) {
-          splice(patches, ++x, 0, [NSMutableArray arrayWithObject:patch]);
         }
       }
-
-      [bigpatch release];
-
+      // Compute the head context for the next patch.
+      precontext = [self diff_text2:patch.diffs];
+      precontext = [precontext substringFromIndex:MAX_OF_CONST_AND_DIFF(0, precontext.length, Patch_Margin)];
+      
+      NSString *postcontext = nil;
+      // Append the end context for this patch.
+      if ([self diff_text1:bigpatch.diffs].length > Patch_Margin) {
+        postcontext = [[self diff_text1:bigpatch.diffs]
+                       substringToIndex:Patch_Margin];
+      } else {
+        postcontext = [self diff_text1:bigpatch.diffs];
+      }
+      
+      if (postcontext.length != 0) {
+        patch.length1 += postcontext.length;
+        patch.length2 += postcontext.length;
+        if (patch.diffs.count != 0
+            && ((Diff *)[patch.diffs objectAtIndex:(patch.diffs.count - 1)]).operation
+            == DIFF_EQUAL) {
+          Diff *lastDiff = [patch.diffs lastObject];
+          lastDiff.text = [lastDiff.text stringByAppendingString:postcontext];
+        } else {
+          [patch.diffs addObject:[Diff diffWithOperation:DIFF_EQUAL andText:postcontext]];
+        }
+      }
+      if (!empty) {
+        splice(patches, ++x, 0, [NSMutableArray arrayWithObject:patch]);
+      }
     }
+    
+    [bigpatch release];
+    
   }
 }
 
