@@ -494,27 +494,28 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     return diffs;
   }
 
-  NSString *longtext = text1.length > text2.length ? text1 : text2;
-  NSString *shorttext = text1.length > text2.length ? text2 : text1;
-  NSUInteger i = [longtext rangeOfString:shorttext].location;
-  if (i != NSNotFound) {
-    // Shorter text is inside the longer text (speedup).
-    Operation op = (text1.length > text2.length) ? DIFF_DELETE : DIFF_INSERT;
-    [diffs addObject:[Diff diffWithOperation:op andText:[longtext substringToIndex:i]]];
-    [diffs addObject:[Diff diffWithOperation:DIFF_EQUAL andText:shorttext]];
-    [diffs addObject:[Diff diffWithOperation:op andText:[longtext substringFromIndex:(i + shorttext.length)]]];
-    return diffs;
+  {
+    // New scope so as to garbage collect longtext and shorttext.
+    NSString *longtext = text1.length > text2.length ? text1 : text2;
+    NSString *shorttext = text1.length > text2.length ? text2 : text1;
+    NSUInteger i = [longtext rangeOfString:shorttext].location;
+    if (i != NSNotFound) {
+      // Shorter text is inside the longer text (speedup).
+      Operation op = (text1.length > text2.length) ? DIFF_DELETE : DIFF_INSERT;
+      [diffs addObject:[Diff diffWithOperation:op andText:[longtext substringToIndex:i]]];
+      [diffs addObject:[Diff diffWithOperation:DIFF_EQUAL andText:shorttext]];
+      [diffs addObject:[Diff diffWithOperation:op andText:[longtext substringFromIndex:(i + shorttext.length)]]];
+      return diffs;
+    }
+    
+    if (shorttext.length == 1) {
+      // Single character string.
+      // After the previous speedup, the character can't be an equality.
+      [diffs addObject:[Diff diffWithOperation:DIFF_DELETE andText:text1]];
+      [diffs addObject:[Diff diffWithOperation:DIFF_INSERT andText:text2]];
+      return diffs;
+    }
   }
-
-  if (shorttext.length == 1) {
-    // Single character string.
-    // After the previous speedup, the character can't be an equality.
-    [diffs addObject:[Diff diffWithOperation:DIFF_DELETE andText:text1]];
-    [diffs addObject:[Diff diffWithOperation:DIFF_INSERT andText:text2]];
-    return diffs;
-  }
-
-  longtext = shorttext = nil;  // Garbage collect: prevent abandoned memory.
 
   // Check to see if the problem can be split in two.
   NSArray *hm = [NSMakeCollectable(diff_halfMatchCreate((CFStringRef)text1, (CFStringRef)text2, Diff_Timeout)) autorelease];
@@ -1459,7 +1460,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  * E.g. =3\t-2\t+ing  -> Keep 3 chars, delete 2 chars, insert 'ing'.
  * Operations are tab-separated.  Inserted text is escaped using %xx
  * notation.
- * @param diffs NSMutableArray of diff tuples.
+ * @param diffs NSMutableArray of Diff objects.
  * @return Delta text.
  */
 - (NSString *)diff_toDelta:(NSMutableArray *)diffs;
@@ -1493,7 +1494,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  * @param text1 Source NSString for the diff.
  * @param delta Delta text.
  * @param error NSError if invalid input.
- * @return NSMutableArray of diff tuples or nil if invalid.
+ * @return NSMutableArray of Diff objects or nil if invalid.
  */
 - (NSMutableArray *)diff_fromDeltaWithText:(NSString *)text1
                                   andDelta:(NSString *)delta
@@ -2128,7 +2129,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 /**
  * Compute a list of patches to turn text1 into text2.
  * text1 will be derived from the provided diffs.
- * @param diffs NSMutableArray of diff tuples for text1 to text2.
+ * @param diffs NSMutableArray of Diff objects for text1 to text2.
  * @return NSMutableArray of Patch objects.
  */
 - (NSMutableArray *)patch_makeFromDiffs:(NSMutableArray *)diffs;
@@ -2144,7 +2145,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  * text2 is ignored, diffs are the delta between text1 and text2.
  * @param text1 Old text
  * @param text2 New text
- * @param diffs NSMutableArray of diff tuples for text1 to text2.
+ * @param diffs NSMutableArray of Diff objects for text1 to text2.
  * @return NSMutableArray of Patch objects.
  * @deprecated Prefer -patch_makeFromOldString:diffs:.
  */
@@ -2165,7 +2166,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  * Compute a list of patches to turn text1 into text2.
  * text2 is not provided, diffs are the delta between text1 and text2.
  * @param text1 Old text.
- * @param diffs NSMutableArray of diff tuples for text1 to text2.
+ * @param diffs NSMutableArray of Diff objects for text1 to text2.
  * @return NSMutableArray of Patch objects.
  */
 - (NSMutableArray *)patch_makeFromOldString:(NSString *)text1
@@ -2256,8 +2257,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
 /**
  * Given an array of patches, return another array that is identical.
- * @param patches NSArray of patch objects.
- * @return NSMutableArray of patch objects.
+ * @param patches NSArray of Patch objects.
+ * @return NSMutableArray of Patch objects.
  */
 - (NSMutableArray *)patch_deepCopiedPatches:(NSArray *)patches;
 {
@@ -2268,7 +2269,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 /**
  * Merge a set of patches onto the text.  Return a patched text, as well
  * as an array of YES/NO values indicating which patches were applied.
- * @param patches NSMutableArray of patch objects
+ * @param patches NSMutableArray of Patch objects
  * @param text Old text.
  * @return Two element NSArray, containing the new text and an array of
  *      BOOL values.
@@ -2393,7 +2394,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 /**
  * Add some padding on text start and end so that edges can match something.
  * Intended to be called only from within patch_apply.
- * @param patches NSMutableArray of patch objects.
+ * @param patches NSMutableArray of Patch objects.
  * @return The padding NSString added to each side.
  */
 - (NSString *)patch_addPadding:(NSMutableArray *)patches;
