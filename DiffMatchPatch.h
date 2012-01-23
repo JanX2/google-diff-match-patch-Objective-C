@@ -85,6 +85,13 @@ typedef enum {
 
 @end
 
+#ifndef NS_RETURNS_RETAINED
+#if __has_feature(attribute_ns_returns_retained)
+#define NS_RETURNS_RETAINED __attribute__((ns_returns_retained))
+#else
+#define NS_RETURNS_RETAINED
+#endif
+#endif
 
 /*
  * Class containing the diff, match and patch methods.
@@ -148,7 +155,7 @@ typedef enum {
 - (NSMutableArray *)patch_makeFromDiffs:(NSMutableArray *)diffs;
 - (NSMutableArray *)patch_makeFromOldString:(NSString *)text1 newString:(NSString *)text2 diffs:(NSMutableArray *)diffs;
 - (NSMutableArray *)patch_makeFromOldString:(NSString *)text1 andDiffs:(NSMutableArray *)diffs;
-- (NSMutableArray *)patch_deepCopiedPatches:(NSArray *)patches; // Copy rule applies!
+- (NSMutableArray *)patch_deepCopy:(NSArray *)patches NS_RETURNS_RETAINED; // Copy rule applies!
 - (NSArray *)patch_apply:(NSArray *)sourcePatches toString:(NSString *)text;
 - (NSString *)patch_addPadding:(NSMutableArray *)patches;
 - (void)patch_splitMax:(NSMutableArray *)patches;
