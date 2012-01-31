@@ -730,7 +730,9 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                        if (text2_buffer != NULL) free(text2_buffer);\
                        free(v1);\
                        free(v2);
-
+  
+  BOOL validDeadline = (deadline != [[NSDate distantFuture] timeIntervalSinceReferenceDate]);
+  
   CFStringRef text1 = (CFStringRef)_text1;
   CFStringRef text2 = (CFStringRef)_text2;
 
@@ -772,7 +774,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   NSMutableArray *diffs;
   for (CFIndex d = 0; d < max_d; d++) {
     // Bail out if deadline is reached.
-    if ([NSDate timeIntervalSinceReferenceDate] > deadline) {
+    if (validDeadline && ([NSDate timeIntervalSinceReferenceDate] > deadline)) {
       break;
     }
 
