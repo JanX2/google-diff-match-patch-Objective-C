@@ -755,7 +755,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   UniChar *text1_buffer = NULL;
   diff_CFStringPrepareUniCharBuffer(text1, &text1_chars, &text1_buffer, CFRangeMake(0, text1_length));
 
-  // Prepare access to chars arrays for text 2 (massive speedup).
+  // Prepare access to chars arrays for text2 (massive speedup).
   const UniChar *text2_chars;
   UniChar *text2_buffer = NULL;
   diff_CFStringPrepareUniCharBuffer(text2, &text2_chars, &text2_buffer, CFRangeMake(0, text2_length));
