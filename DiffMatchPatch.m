@@ -494,7 +494,6 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     return diffs;
   }
 
-  // New scope so as to garbage collect longtext and shorttext.
   NSString *longtext = text1.length > text2.length ? text1 : text2;
   NSString *shorttext = text1.length > text2.length ? text2 : text1;
   NSUInteger i = [longtext rangeOfString:shorttext].location;
