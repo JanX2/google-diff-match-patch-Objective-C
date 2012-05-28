@@ -29,9 +29,11 @@
 #include <limits.h>
 #include <AssertMacros.h>
 
+#if ENABLE_UNUSED_CODE
 CFRange diff_RightSubstringRange(CFIndex text_length, CFIndex new_length);
-CFStringRef diff_CFStringCreateRightSubstring(CFStringRef text, CFIndex text_length, CFIndex new_length);
 CFRange diff_LeftSubstringRange(CFIndex new_length);
+#endif
+CFStringRef diff_CFStringCreateRightSubstring(CFStringRef text, CFIndex text_length, CFIndex new_length);
 CFStringRef diff_CFStringCreateLeftSubstring(CFStringRef text, CFIndex new_length);
 CFStringRef diff_CFStringCreateSubstringWithStartIndex(CFStringRef text, CFIndex start_index);
 CFStringRef diff_CFStringCreateJavaSubstring(CFStringRef s, CFIndex begin, CFIndex end);
@@ -58,6 +60,7 @@ CF_INLINE CFStringRef diff_CFStringCreateSubstring(CFStringRef text, CFIndex sta
   return substring;
 }
 
+#if ENABLE_UNUSED_CODE
 CFRange diff_RightSubstringRange(CFIndex text_length, CFIndex new_length) {
   CFRange substringRange = {
     .length = new_length,
@@ -65,11 +68,13 @@ CFRange diff_RightSubstringRange(CFIndex text_length, CFIndex new_length) {
   };
   return substringRange;
 }
+#endif
 
 CFStringRef diff_CFStringCreateRightSubstring(CFStringRef text, CFIndex text_length, CFIndex new_length) {
   return diff_CFStringCreateSubstring(text, text_length - new_length, new_length);
 }
 
+#if ENABLE_UNUSED_CODE
 CFRange diff_LeftSubstringRange(CFIndex new_length) {
   CFRange substringRange = {
     .length = new_length,
@@ -77,6 +82,7 @@ CFRange diff_LeftSubstringRange(CFIndex new_length) {
   };
   return substringRange;
 }
+#endif
 
 CFStringRef diff_CFStringCreateLeftSubstring(CFStringRef text, CFIndex new_length) {
   return diff_CFStringCreateSubstring(text, 0, new_length);
