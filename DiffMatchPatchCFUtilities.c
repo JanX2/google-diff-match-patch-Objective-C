@@ -527,7 +527,7 @@ CFStringRef diff_tokensToCharsMungeCFStringCreate(CFStringRef text, CFMutableArr
   while (mask != kCFStringTokenizerTokenNone) {
     tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
     
-    token = diff_CFStringCreateSubstring(text, tokenRange.location, tokenRange.length);
+    token = CFStringCreateWithSubstring(kCFAllocatorDefault, text, tokenRange);
     diff_mungeHelper(token, tokenArray, tokenHash, chars);
     CFRelease(token);
     
