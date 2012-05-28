@@ -24,7 +24,33 @@
 #define _DIFFMATCHPATCHCFUTILITIES_H
 
 CFStringRef diff_CFStringCreateFromUnichar(UniChar ch);
-CFStringRef diff_CFStringCreateJavaSubstring(CFStringRef s, CFIndex begin, CFIndex end);
+
+CF_INLINE CFStringRef diff_CFStringCreateSubstring(CFStringRef text, CFIndex start_index, CFIndex length) {
+  CFRange substringRange = {
+    .length = length,
+    .location = start_index,
+  };
+  
+  CFStringRef substring = CFStringCreateWithSubstring(kCFAllocatorDefault, text, substringRange);
+  
+  return substring;
+}
+
+CF_INLINE CFStringRef diff_CFStringCreateRightSubstring(CFStringRef text, CFIndex text_length, CFIndex new_length) {
+  return diff_CFStringCreateSubstring(text, text_length - new_length, new_length);
+}
+
+CF_INLINE CFStringRef diff_CFStringCreateLeftSubstring(CFStringRef text, CFIndex new_length) {
+  return diff_CFStringCreateSubstring(text, 0, new_length);
+}
+
+CF_INLINE CFStringRef diff_CFStringCreateSubstringWithStartIndex(CFStringRef text, CFIndex start_index) {
+  return diff_CFStringCreateSubstring(text, start_index, (CFStringGetLength(text) - start_index));
+}
+
+CF_INLINE CFStringRef diff_CFStringCreateJavaSubstring(CFStringRef s, CFIndex begin, CFIndex end) {
+  return diff_CFStringCreateSubstring(s, begin, end - begin);
+}
 
 CFIndex diff_commonPrefix(CFStringRef text1, CFStringRef text2);
 CFIndex diff_commonSuffix(CFStringRef text1, CFStringRef text2);

@@ -29,14 +29,6 @@
 #include <limits.h>
 #include <AssertMacros.h>
 
-#if ENABLE_UNUSED_CODE
-CFRange diff_RightSubstringRange(CFIndex text_length, CFIndex new_length);
-CFRange diff_LeftSubstringRange(CFIndex new_length);
-#endif
-CFStringRef diff_CFStringCreateRightSubstring(CFStringRef text, CFIndex text_length, CFIndex new_length);
-CFStringRef diff_CFStringCreateLeftSubstring(CFStringRef text, CFIndex new_length);
-CFStringRef diff_CFStringCreateSubstringWithStartIndex(CFStringRef text, CFIndex start_index);
-CFStringRef diff_CFStringCreateJavaSubstring(CFStringRef s, CFIndex begin, CFIndex end);
 Boolean diff_regExMatch(CFStringRef text, const regex_t *re);
 
 CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CFIndex i);
@@ -47,53 +39,6 @@ void diff_mungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMutable
 CFStringRef diff_CFStringCreateFromUnichar(UniChar ch) {
   CFStringRef c = CFStringCreateWithCharacters(kCFAllocatorDefault, &ch, 1);
   return c;
-}
-
-CF_INLINE CFStringRef diff_CFStringCreateSubstring(CFStringRef text, CFIndex start_index, CFIndex length) {
-  CFRange substringRange = {
-    .length = length,
-    .location = start_index,
-  };
-
-  CFStringRef substring = CFStringCreateWithSubstring(kCFAllocatorDefault, text, substringRange);
-
-  return substring;
-}
-
-#if ENABLE_UNUSED_CODE
-CFRange diff_RightSubstringRange(CFIndex text_length, CFIndex new_length) {
-  CFRange substringRange = {
-    .length = new_length,
-    .location = text_length - new_length,
-  };
-  return substringRange;
-}
-#endif
-
-CFStringRef diff_CFStringCreateRightSubstring(CFStringRef text, CFIndex text_length, CFIndex new_length) {
-  return diff_CFStringCreateSubstring(text, text_length - new_length, new_length);
-}
-
-#if ENABLE_UNUSED_CODE
-CFRange diff_LeftSubstringRange(CFIndex new_length) {
-  CFRange substringRange = {
-    .length = new_length,
-    .location = 0,
-  };
-  return substringRange;
-}
-#endif
-
-CFStringRef diff_CFStringCreateLeftSubstring(CFStringRef text, CFIndex new_length) {
-  return diff_CFStringCreateSubstring(text, 0, new_length);
-}
-
-CFStringRef diff_CFStringCreateSubstringWithStartIndex(CFStringRef text, CFIndex start_index) {
-  return diff_CFStringCreateSubstring(text, start_index, (CFStringGetLength(text) - start_index));
-}
-
-CFStringRef diff_CFStringCreateJavaSubstring(CFStringRef s, CFIndex begin, CFIndex end) {
-  return diff_CFStringCreateSubstring(s, begin, end - begin);
 }
 
 Boolean diff_regExMatch(CFStringRef text, const regex_t *re) {
