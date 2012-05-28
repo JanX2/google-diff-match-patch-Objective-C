@@ -49,9 +49,10 @@ CFStringRef diff_CFStringCreateFromUnichar(UniChar ch) {
 }
 
 CFStringRef diff_CFStringCreateSubstring(CFStringRef text, CFIndex start_index, CFIndex length) {
-  CFRange substringRange;
-  substringRange.length = length;
-  substringRange.location = start_index;
+  CFRange substringRange = {
+    .length = length,
+    .location = start_index,
+  };
 
   CFStringRef substring = CFStringCreateWithSubstring(kCFAllocatorDefault, text, substringRange);
 
@@ -59,9 +60,10 @@ CFStringRef diff_CFStringCreateSubstring(CFStringRef text, CFIndex start_index, 
 }
 
 CFRange diff_RightSubstringRange(CFIndex text_length, CFIndex new_length) {
-  CFRange substringRange;
-  substringRange.length = new_length;
-  substringRange.location = text_length - new_length;
+  CFRange substringRange = {
+    .length = new_length,
+    .location = text_length - new_length,
+  };
   return substringRange;
 }
 
@@ -70,9 +72,10 @@ CFStringRef diff_CFStringCreateRightSubstring(CFStringRef text, CFIndex text_len
 }
 
 CFRange diff_LeftSubstringRange(CFIndex new_length) {
-  CFRange substringRange;
-  substringRange.length = new_length;
-  substringRange.location = 0;
+  CFRange substringRange = {
+    .length = new_length,
+    .location = 0,
+  };
   return substringRange;
 }
 
