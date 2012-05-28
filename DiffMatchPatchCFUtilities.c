@@ -29,7 +29,6 @@
 #include <limits.h>
 #include <AssertMacros.h>
 
-CFStringRef diff_CFStringCreateSubstring(CFStringRef text, CFIndex start_index, CFIndex length);
 CFRange diff_RightSubstringRange(CFIndex text_length, CFIndex new_length);
 CFStringRef diff_CFStringCreateRightSubstring(CFStringRef text, CFIndex text_length, CFIndex new_length);
 CFRange diff_LeftSubstringRange(CFIndex new_length);
@@ -48,7 +47,7 @@ CFStringRef diff_CFStringCreateFromUnichar(UniChar ch) {
   return c;
 }
 
-CFStringRef diff_CFStringCreateSubstring(CFStringRef text, CFIndex start_index, CFIndex length) {
+CF_INLINE CFStringRef diff_CFStringCreateSubstring(CFStringRef text, CFIndex start_index, CFIndex length) {
   CFRange substringRange = {
     .length = length,
     .location = start_index,
