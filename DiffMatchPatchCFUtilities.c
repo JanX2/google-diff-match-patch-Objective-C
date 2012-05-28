@@ -469,19 +469,19 @@ CFStringRef diff_tokensToCharsMungeCFStringCreate(CFStringRef text, CFMutableArr
   //CFRelease(currentLocale);
   
   // Set tokenizer to the start of the string. 
-  CFStringTokenizerTokenType mask = CFStringTokenizerGoToTokenAtIndex(tokenizer, 0);
+  CFStringTokenizerTokenType tokenType = CFStringTokenizerGoToTokenAtIndex(tokenizer, 0);
   
   // Walk the text, pulling out a substring for each token (or boundary between tokens). 
   // A token is either a word, sentence, paragraph or line depending on what tokenizerOptions is set to. 
   CFRange tokenRange;
-  while (mask != kCFStringTokenizerTokenNone) {
+  while (tokenType != kCFStringTokenizerTokenNone) {
     tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
     
     token = CFStringCreateWithSubstring(kCFAllocatorDefault, text, tokenRange);
     diff_mungeHelper(token, tokenArray, tokenHash, chars);
     CFRelease(token);
     
-    mask = CFStringTokenizerAdvanceToNextToken(tokenizer);
+    tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer);
   }
   
   CFRelease(tokenizer);
