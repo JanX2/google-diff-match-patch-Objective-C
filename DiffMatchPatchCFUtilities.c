@@ -461,6 +461,7 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
  */
 CFStringRef diff_tokensToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash, CFOptionFlags tokenizerOptions) {
   
+  CFStringRef token;
   CFMutableStringRef chars = CFStringCreateMutable(kCFAllocatorDefault, 0);
   
   CFIndex textLength = CFStringGetLength(text);
@@ -479,22 +480,14 @@ CFStringRef diff_tokensToCharsMungeCFStringCreate(CFStringRef text, CFMutableArr
   // Walk the text, pulling out a substring for each token (or boundary between tokens). 
   // A token is either a word, sentence, paragraph or line depending on what tokenizerOptions is set to. 
   CFRange tokenRange;
-  CFIndex prevTokenRangeMax = 0;
   while (tokenType != kCFStringTokenizerTokenNone) {
     tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
     
-    if (tokenRange.location > prevTokenRangeMax) {
-      // This probably is a bug in the tokenizer: for some reason, gaps in the tokenization can appear. 
-      // One particular example is the tokenizer skipping a line feed ('\n') directly after a string of Chinese characters
-      CFRange gapRange = CFRangeMake(prevTokenRangeMax, (tokenRange.location - prevTokenRangeMax));
-      diff_mungeTokenForRange(text, gapRange, chars, tokenHash, tokenArray);
-    }
-    
-    diff_mungeTokenForRange(text, tokenRange, chars, tokenHash, tokenArray);
+    token = CFStringCreateWithSubstring(kCFAllocatorDefault, text, tokenRange);
+    diff_mungeHelper(token, tokenArray, tokenHash, chars);
+    CFRelease(token);
     
     tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer);
-    
-    prevTokenRangeMax = (tokenRange.location + tokenRange.length);
   }
   
   CFRelease(tokenizer);
