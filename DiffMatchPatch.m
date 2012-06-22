@@ -1030,23 +1030,50 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                                            mode:DiffWordTokens];
 }
 
+
+/**
+ * Adapter function.
+ * @param NSArray of Diff objects.
+ * @param NSMutableArray of unique strings.
+ */
+NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tokenArray)
+{
+  CFStringRef text = diff_charsToTokenCFStringCreate((CFStringRef)charsString, (CFArrayRef)tokenArray);
+  
+  return [NSMakeCollectable(text) autorelease];
+}
+
+/**
+ * Rehydrate an NSString of token hashes to real text tokens.
+ * @param NSArray of Diff objects.
+ * @param NSArray of unique strings.
+ */
+- (NSString *)diff_charsToTokenString:(NSString *)charsString usingTokens:(NSArray *)tokenArray;
+{
+  return diff_charsToTokenString(charsString, tokenArray);
+}
 /**
  * Rehydrate the text in a diff from an NSString of line hashes to real lines
  * of text.
  * @param NSArray of Diff objects.
- * @param NSMutableArray of unique strings.
+ * @param NSArray of unique strings.
  */
-- (void)diff_chars:(NSArray *)diffs toLines:(NSMutableArray *)lineArray;
+- (void)diff_chars:(NSArray *)diffs toLines:(NSArray *)lineArray;
 {
-  NSMutableString *text;
-  NSUInteger lineHash;
   for (Diff *diff in diffs) {
-    text = [NSMutableString string];
-    for (NSUInteger y = 0; y < [diff.text length]; y++) {
-      lineHash = (NSUInteger)[diff.text characterAtIndex:y];
-      [text appendString:[lineArray objectAtIndex:lineHash]];
-    }
-    diff.text = text;
+    diff.text = diff_charsToTokenString(diff.text, lineArray);
+  }
+}
+
+/**
+ * Rehydrate the text in a diff from an NSString of token hashes to real text tokens.
+ * @param NSArray of Diff objects.
+ * @param NSArray of unique strings.
+ */
+- (void)diff_chars:(NSArray *)diffs toTokens:(NSArray *)tokenArray;
+{
+  for (Diff *diff in diffs) {
+    diff.text = diff_charsToTokenString(diff.text, tokenArray);
   }
 }
 

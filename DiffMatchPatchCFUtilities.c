@@ -548,6 +548,28 @@ CFStringRef diff_lineBreakDelimiteredToCharsMungeCFStringCreate(CFStringRef text
   
 }
 
+CFStringRef diff_charsToTokenCFStringCreate(CFStringRef charsString, CFArrayRef tokenArray) {
+#define hashAtIndex(A)  hash_chars[(A)]
+  CFMutableStringRef text = CFStringCreateMutable(kCFAllocatorDefault, 0);
+  
+  CFIndex hash_count = CFStringGetLength(charsString);
+
+  const UniChar *hash_chars;
+  UniChar *hash_buffer = NULL;
+  diff_CFStringPrepareUniCharBuffer(charsString, &hash_chars, &hash_buffer, CFRangeMake(0, hash_count));
+  
+  for (CFIndex i = 0; i < hash_count; i++) {
+    CFIndex tokenHash = (CFIndex)hashAtIndex(i);
+    CFStringRef token = CFArrayGetValueAtIndex(tokenArray, tokenHash);
+    CFStringAppend(text, token);
+  }
+  
+  if (hash_buffer != NULL)  free(hash_buffer);
+  
+  return text;
+#undef hashAtIndex
+}
+
 /**
  * Given two strings, compute a score representing whether the internal
  * boundary falls on logical boundaries.
