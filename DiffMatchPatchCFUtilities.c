@@ -397,6 +397,12 @@ void diff_mungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMutable
   #undef diff_UniCharMax
 }
 
+CF_INLINE void diff_mungeTokenForRange(CFStringRef text, CFRange tokenRange, CFMutableStringRef chars, CFMutableDictionaryRef tokenHash, CFMutableArrayRef tokenArray) {
+  CFStringRef token = CFStringCreateWithSubstring(kCFAllocatorDefault, text, tokenRange);
+  diff_mungeHelper(token, tokenArray, tokenHash, chars);
+  CFRelease(token);
+}
+
 /**
  * Split a text into a list of strings.   Reduce the texts to a CFStringRef of
  * hashes where each Unicode character represents one line.
@@ -455,7 +461,6 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
  */
 CFStringRef diff_tokensToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash, CFOptionFlags tokenizerOptions) {
   
-  CFStringRef token;
   CFMutableStringRef chars = CFStringCreateMutable(kCFAllocatorDefault, 0);
   
   CFIndex textLength = CFStringGetLength(text);
@@ -482,14 +487,10 @@ CFStringRef diff_tokensToCharsMungeCFStringCreate(CFStringRef text, CFMutableArr
       // This probably is a bug in the tokenizer: for some reason, gaps in the tokenization can appear. 
       // One particular example is the tokenizer skipping a line feed ('\n') directly after a string of Chinese characters
       CFRange gapRange = CFRangeMake(prevTokenRangeMax, (tokenRange.location - prevTokenRangeMax));
-      token = CFStringCreateWithSubstring(kCFAllocatorDefault, text, gapRange);
-      diff_mungeHelper(token, tokenArray, tokenHash, chars);
-      CFRelease(token);
+      diff_mungeTokenForRange(text, gapRange, chars, tokenHash, tokenArray);
     }
     
-    token = CFStringCreateWithSubstring(kCFAllocatorDefault, text, tokenRange);
-    diff_mungeHelper(token, tokenArray, tokenHash, chars);
-    CFRelease(token);
+    diff_mungeTokenForRange(text, tokenRange, chars, tokenHash, tokenArray);
     
     tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer);
     
