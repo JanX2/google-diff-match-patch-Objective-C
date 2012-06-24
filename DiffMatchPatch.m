@@ -1986,15 +1986,17 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
         }
       }
     }
+    
+    if (last_rd != NULL) {
+      free(last_rd);
+    }
+    last_rd = rd;
+    
     if ([self match_bitapScoreForErrorCount:(d + 1) location:loc near:loc pattern:pattern] > score_threshold) {
       // No hope for a (better) match at greater error levels.
       break;
     }
 
-    if (last_rd != NULL) {
-      free(last_rd);
-    }
-    last_rd = rd;
   }
 
   if (rd != NULL && last_rd != rd) {
