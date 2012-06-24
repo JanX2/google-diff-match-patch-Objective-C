@@ -906,8 +906,8 @@
   diffs = [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_DELETE andText:@"Apple"], [Diff diffWithOperation:DIFF_INSERT andText:@"Banana"], [Diff diffWithOperation:DIFF_EQUAL andText:@"s are a"], [Diff diffWithOperation:DIFF_INSERT andText:@"lso"], [Diff diffWithOperation:DIFF_EQUAL andText:@" fruit."], nil];
   STAssertEqualObjects(diffs, [dmp diff_mainOfOldString:@"Apples are a fruit." andNewString:@"Bananas are also fruit." checkLines:NO], @"diff_main: Simple case #2.");
 
-  diffs = [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_DELETE andText:@"a"], [Diff diffWithOperation:DIFF_INSERT andText:@"\U00000680"], [Diff diffWithOperation:DIFF_EQUAL andText:@"x"], [Diff diffWithOperation:DIFF_DELETE andText:@"\t"], [Diff diffWithOperation:DIFF_INSERT andText:[NSString stringWithFormat:@"%C", 0]], nil];
-  NSString *aString = [NSString stringWithFormat:@"\U00000680x%C", 0];
+  diffs = [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_DELETE andText:@"a"], [Diff diffWithOperation:DIFF_INSERT andText:@"\U00000680"], [Diff diffWithOperation:DIFF_EQUAL andText:@"x"], [Diff diffWithOperation:DIFF_DELETE andText:@"\t"], [Diff diffWithOperation:DIFF_INSERT andText:[NSString stringWithFormat:@"%C", (unichar)0]], nil];
+  NSString *aString = [NSString stringWithFormat:@"\U00000680x%C", (unichar)0];
   STAssertEqualObjects(diffs, [dmp diff_mainOfOldString:@"ax\t" andNewString:aString checkLines:NO], @"diff_main: Simple case #3.");
 
   diffs = [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_DELETE andText:@"1"], [Diff diffWithOperation:DIFF_EQUAL andText:@"a"], [Diff diffWithOperation:DIFF_DELETE andText:@"y"], [Diff diffWithOperation:DIFF_EQUAL andText:@"b"], [Diff diffWithOperation:DIFF_DELETE andText:@"2"], [Diff diffWithOperation:DIFF_INSERT andText:@"xab"], nil];
