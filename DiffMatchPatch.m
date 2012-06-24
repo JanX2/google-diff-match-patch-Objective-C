@@ -1999,11 +1999,11 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
 
   }
 
-  if (rd != NULL && last_rd != rd) {
-    free(rd);
-  }
-  if (last_rd != NULL) {
+  if (last_rd != NULL && last_rd != rd) {
     free(last_rd);
+  }
+  if (rd != NULL) {
+    free(rd);
   }
 
   return best_loc;
