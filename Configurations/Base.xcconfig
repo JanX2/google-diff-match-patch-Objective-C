@@ -1,6 +1,7 @@
 #include "Version.xcconfig"
 
-SDKROOT = macosx10.6
+SDKROOT = macosx10.7
+MACOSX_DEPLOYMENT_TARGET = 10.6
 PREBINDING = NO
 ARCHS = i386 x86_64
 //ARCHS = ppc i386 x86_64 // PPC works, but fails the timing tests under Rosetta
