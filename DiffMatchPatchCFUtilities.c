@@ -29,6 +29,8 @@
 #include <limits.h>
 #include <AssertMacros.h>
 
+#define DIFF_IGNORE_CAPS 1
+
 Boolean diff_regExMatch(CFStringRef text, const regex_t *re);
 
 CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CFIndex i);
@@ -99,10 +101,18 @@ CFIndex diff_commonPrefix(CFStringRef text1, CFStringRef text2) {
   // Performance analysis: http://neil.fraser.name/news/2007/10/09/
   CFIndex text1_length = CFStringGetLength(text1);
   CFIndex text2_length = CFStringGetLength(text2);
-
+    
+  CFMutableStringRef lowercaseText1 = CFStringCreateMutableCopy(kCFAllocatorSystemDefault, 0, text1);
+  if (DIFF_IGNORE_CAPS)
+    CFStringLowercase(lowercaseText1, NULL);
+  
+  CFMutableStringRef lowercaseText2 = CFStringCreateMutableCopy(kCFAllocatorSystemDefault, 0, text2);
+  if (DIFF_IGNORE_CAPS)
+    CFStringLowercase(lowercaseText2, NULL);
+  
   CFStringInlineBuffer text1_inlineBuffer, text2_inlineBuffer;
-  CFStringInitInlineBuffer(text1, &text1_inlineBuffer, CFRangeMake(0, text1_length));
-  CFStringInitInlineBuffer(text2, &text2_inlineBuffer, CFRangeMake(0, text2_length));
+  CFStringInitInlineBuffer(lowercaseText1, &text1_inlineBuffer, CFRangeMake(0, text1_length));
+  CFStringInitInlineBuffer(lowercaseText2, &text2_inlineBuffer, CFRangeMake(0, text2_length));
 
   UniChar char1, char2;
   CFIndex n = MIN(text1_length, text2_length);
@@ -130,9 +140,17 @@ CFIndex diff_commonSuffix(CFStringRef text1, CFStringRef text2) {
   CFIndex text1_length = CFStringGetLength(text1);
   CFIndex text2_length = CFStringGetLength(text2);
 
+  CFMutableStringRef lowercaseText1 = CFStringCreateMutableCopy(kCFAllocatorSystemDefault, 0, text1);
+  if (DIFF_IGNORE_CAPS)
+    CFStringLowercase(lowercaseText1, NULL);
+    
+  CFMutableStringRef lowercaseText2 = CFStringCreateMutableCopy(kCFAllocatorSystemDefault, 0, text2);
+  if (DIFF_IGNORE_CAPS)
+    CFStringLowercase(lowercaseText2, NULL);
+    
   CFStringInlineBuffer text1_inlineBuffer, text2_inlineBuffer;
-  CFStringInitInlineBuffer(text1, &text1_inlineBuffer, CFRangeMake(0, text1_length));
-  CFStringInitInlineBuffer(text2, &text2_inlineBuffer, CFRangeMake(0, text2_length));
+  CFStringInitInlineBuffer(lowercaseText1, &text1_inlineBuffer, CFRangeMake(0, text1_length));
+  CFStringInitInlineBuffer(lowercaseText2, &text2_inlineBuffer, CFRangeMake(0, text2_length));
 
   UniChar char1, char2;
   CFIndex n = MIN(text1_length, text2_length);
