@@ -455,8 +455,8 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
  * Split a text into a list of strings.   Reduce the texts to a CFStringRef of
  * hashes where where each Unicode character represents one token (or boundary between tokens).
  * @param text CFString to encode.
- * @param lineArray CFMutableArray of unique strings.
- * @param lineHash Map of strings to indices.
+ * @param tokenArray CFMutableArray of unique strings.
+ * @param tokenHash Map of strings to indices.
  * @return Encoded CFStringRef.
  */
 CFStringRef diff_tokensToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash, CFOptionFlags tokenizerOptions) {

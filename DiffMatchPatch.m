@@ -958,7 +958,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  * The type is determined by the mode object. 
  * @param text1 First NSString.
  * @param text2 Second NSString.
- * @param mode Object determining the mode.
+ * @param mode value determining the tokenization mode.
  * @return Three element NSArray, containing the encoded text1, the
  *     encoded text2 and the NSMutableArray of unique strings. The zeroth element
  *     of the NSArray of unique strings is intentionally blank.
