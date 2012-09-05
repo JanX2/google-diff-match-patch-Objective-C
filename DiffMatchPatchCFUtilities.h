@@ -64,6 +64,7 @@ CFStringRef diff_wordsToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
 CFStringRef diff_sentencesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash);
 CFStringRef diff_paragraphsToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash);
 CFStringRef diff_lineBreakDelimiteredToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef tokenArray, CFMutableDictionaryRef tokenHash);
+CFStringRef diff_rangesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef substringArray, CFMutableDictionaryRef substringHash, CFRange *ranges, size_t ranges_count);
 
 CFStringRef diff_charsToTokenCFStringCreate(CFStringRef charsString, CFArrayRef tokenArray);
 

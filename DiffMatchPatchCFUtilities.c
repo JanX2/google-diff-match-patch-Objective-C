@@ -504,6 +504,30 @@ CFStringRef diff_tokensToCharsMungeCFStringCreate(CFStringRef text, CFMutableArr
 }
 
 /**
+ * Split a text into a list of strings.  Reduce the texts to a CFStringRef of
+ * hashes where where each Unicode character represents the substring for a CFRange.
+ * @param text CFString to encode.
+ * @param substringArray CFMutableArray of unique strings.
+ * @param substringHash Map of strings to indices.
+ * @param ranges C array of CFRange structs determining the subranges to hash.
+ * @param ranges_count Count of the CFRange structs contained in ranges.
+ * @return Encoded CFStringRef.
+ */
+CFStringRef diff_rangesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef substringArray, CFMutableDictionaryRef substringHash, CFRange *ranges, size_t ranges_count) {
+  
+  CFMutableStringRef chars = CFStringCreateMutable(kCFAllocatorDefault, 0);
+  
+	for (size_t i = 0; i < ranges_count; i++) {
+    CFRange substringRange = ranges[i];
+    
+    diff_mungeTokenForRange(text, substringRange, chars, substringHash, substringArray);
+  }
+  
+  return chars;
+  
+}
+
+/**
  * Split a text into a list of strings.   Reduce the texts to a CFStringRef of
  * hashes where where each Unicode character represents one word (or boundary between words).
  * @param text CFString to encode.
