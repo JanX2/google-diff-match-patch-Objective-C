@@ -144,7 +144,7 @@ typedef enum {
 - (NSString *)diff_prettyHtml:(NSMutableArray *)diffs;
 - (NSString *)diff_text1:(NSMutableArray *)diffs;
 - (NSString *)diff_text2:(NSMutableArray *)diffs;
-- (NSUInteger)diff_levenshtein:(NSMutableArray *)diffs;
+- (NSUInteger)diff_levenshtein:(NSArray *)diffs;
 - (NSString *)diff_toDelta:(NSMutableArray *)diffs;
 - (NSMutableArray *)diff_fromDeltaWithText:(NSString *)text1 andDelta:(NSString *)delta error:(NSError **)error;
 

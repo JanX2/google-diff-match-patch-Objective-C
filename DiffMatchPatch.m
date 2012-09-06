@@ -1670,10 +1670,10 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
 /**
  * Compute the Levenshtein distance; the number of inserted, deleted or
  * substituted characters.
- * @param diffs NSMutableArray of Diff objects.
+ * @param diffs NSArray of Diff objects.
  * @return Number of changes.
  */
-- (NSUInteger)diff_levenshtein:(NSMutableArray *)diffs;
+- (NSUInteger)diff_levenshtein:(NSArray *)diffs;
 {
   NSUInteger levenshtein = 0;
   NSUInteger insertions = 0;
