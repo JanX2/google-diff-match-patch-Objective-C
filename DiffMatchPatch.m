@@ -951,6 +951,27 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   return result;
 }
 
++ (CFOptionFlags)tokenizerOptionsForMode:(DiffTokenMode)mode;
+{
+    CFOptionFlags tokenizerOptions;
+    switch (mode) {
+        case DiffWordTokens:
+            tokenizerOptions = kCFStringTokenizerUnitWordBoundary;
+            break;
+        case DiffSentenceTokens:
+            tokenizerOptions = kCFStringTokenizerUnitSentence;
+            break;
+        case DiffLineBreakDelimiteredTokens:
+            tokenizerOptions = kCFStringTokenizerUnitLineBreak;
+            break;
+        case DiffParagraphTokens:
+        default:
+            tokenizerOptions = kCFStringTokenizerUnitParagraph;
+            break;
+    }
+    return tokenizerOptions;
+}
+
 /**
  * Split two texts into a list of strings.  Reduce the texts to a string of
  * hashes where each Unicode character represents one token (or boundary between tokens).
@@ -967,23 +988,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                               andSecondString:(NSString *)text2
                                          mode:(DiffTokenMode)mode;
 {
-  CFOptionFlags tokenizerOptions;
-
-  switch (mode) {
-    case DiffWordTokens:
-      tokenizerOptions = kCFStringTokenizerUnitWordBoundary;
-      break;
-    case DiffSentenceTokens:
-      tokenizerOptions = kCFStringTokenizerUnitSentence;
-      break;
-    case DiffLineBreakDelimiteredTokens:
-      tokenizerOptions = kCFStringTokenizerUnitLineBreak;
-      break;
-    case DiffParagraphTokens:
-    default:
-      tokenizerOptions = kCFStringTokenizerUnitParagraph;
-      break;
-  }
+  CFOptionFlags tokenizerOptions = [[self class] tokenizerOptionsForMode:mode];
   
   NSMutableArray *tokenArray = [NSMutableArray array]; // NSString objects
   CFMutableDictionaryRef tokenHash = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, NULL); // keys: NSString, values:raw CFIndex
