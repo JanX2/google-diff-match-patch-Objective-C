@@ -629,11 +629,19 @@ CFIndex diff_cleanupSemanticScore(CFStringRef one, CFStringRef two) {
     controlSet = CFCharacterSetGetPredefined(kCFCharacterSetControl);
 
     // Define some regex patterns for matching boundaries.
+#ifdef DEBUG_CLEANUP_SEMANTIC_SCORE
     int status;
-    status = regcomp(&blankLineEndRegEx, "\n\r?\n$", REG_EXTENDED | REG_NOSUB);
+    status =
+#endif
+    regcomp(&blankLineEndRegEx, "\n\r?\n$", REG_EXTENDED | REG_NOSUB);
+#ifdef DEBUG_CLEANUP_SEMANTIC_SCORE
     check(status == 0);
-    status = regcomp(&blankLineStartRegEx, "^\r?\n\r?\n", REG_EXTENDED | REG_NOSUB);
+    status =
+#endif
+    regcomp(&blankLineStartRegEx, "^\r?\n\r?\n", REG_EXTENDED | REG_NOSUB);
+#ifdef DEBUG_CLEANUP_SEMANTIC_SCORE
     check(status == 0);
+#endif
 
     firstRun = false;
   }
