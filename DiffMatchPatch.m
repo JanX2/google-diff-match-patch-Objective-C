@@ -524,7 +524,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   // Check to see if the problem can be split in two.
   NSArray *hm = JX_TRANSFER_CF_TO_OBJC(NSArray *, diff_halfMatchCreate(JX_BRIDGED_CAST(CFStringRef, text1), JX_BRIDGED_CAST(CFStringRef, text2), Diff_Timeout));
   if (hm != nil) {
-    NSAutoreleasePool *splitPool = [NSAutoreleasePool new];
+    JX_NEW_AUTORELEASE_POOL_WITH_NAME(splitPool)
     // A half-match was found, sort out the return data.
     NSString *text1_a = [hm objectAtIndex:0];
     NSString *text1_b = [hm objectAtIndex:1];
@@ -538,18 +538,18 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     diffs = JX_RETAIN(diffs_a);
     [diffs addObject:[Diff diffWithOperation:DIFF_EQUAL andText:mid_common]];
     [diffs addObjectsFromArray:diffs_b];
-    [splitPool drain];
+    JX_END_AUTORELEASE_POOL_WITH_NAME(splitPool)
+    
     return JX_AUTORELEASE(diffs);
   }
-
+  
   if (checklines && text1.length > 100 && text2.length > 100) {
     return [self diff_lineModeFromOldString:text1 andNewString:text2 deadline:deadline];
   }
-
-  NSAutoreleasePool *bisectPool = [NSAutoreleasePool new];
-  diffs = [self diff_bisectOfOldString:text1 andNewString:text2 deadline:deadline];
-  JX_RETAIN(diffs);
-  [bisectPool drain];
+  
+  JX_NEW_AUTORELEASE_POOL_WITH_NAME(bisectPool)
+  diffs = JX_RETAIN([self diff_bisectOfOldString:text1 andNewString:text2 deadline:deadline]);
+  JX_END_AUTORELEASE_POOL_WITH_NAME(bisectPool)
 
   return JX_AUTORELEASE(diffs);
 }
@@ -573,12 +573,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   text2 = (NSString *)[b objectAtIndex:1];
   NSMutableArray *linearray = (NSMutableArray *)[b objectAtIndex:2];
 
-  NSAutoreleasePool *recursePool = [NSAutoreleasePool new];
-  NSMutableArray *diffs = [self diff_mainOfOldString:text1 andNewString:text2 checkLines:NO deadline:deadline];
-  JX_RETAIN(diffs);
-  [recursePool drain];
-
-  JX_AUTORELEASE(diffs);
+  NSMutableArray *diffs;
+  JX_NEW_AUTORELEASE_POOL_WITH_NAME(recursePool)
+  diffs = JX_RETAIN([self diff_mainOfOldString:text1 andNewString:text2 checkLines:NO deadline:deadline]);
+  JX_END_AUTORELEASE_POOL_WITH_NAME(recursePool)
 
   // Convert the diff back to original text.
   [self diff_chars:diffs toLines:linearray];
@@ -628,7 +626,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   }
   [diffs removeLastObject];  // Remove the dummy entry at the end.
 
-  return diffs;
+  return JX_AUTORELEASE(diffs); // Retained in autorelease pool above.
 }
 
 /**

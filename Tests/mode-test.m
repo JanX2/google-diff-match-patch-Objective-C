@@ -110,7 +110,7 @@ NSMutableArray * diff_defaultMode(NSString *text1, NSString *text2) {
 
 
 int main (int argc, const char * argv[]) {
-  NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+  JX_NEW_AUTORELEASE_POOL_WITH_NAME(pool)
   
   NSArray *cliArguments = [[NSProcessInfo processInfo] arguments];
   
@@ -155,6 +155,7 @@ int main (int argc, const char * argv[]) {
   
   NSLog(@"%@", [diffs description]);
   
-  [pool drain];
+  JX_END_AUTORELEASE_POOL_WITH_NAME(pool)
+  
   return EXIT_SUCCESS;
 }

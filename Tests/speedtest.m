@@ -37,7 +37,7 @@ void diff_measureTimeForDiff(DiffMatchPatch *dmp, NSString *text1, NSString *tex
 }  
 
 int main (int argc, const char * argv[]) {
-  NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+  JX_NEW_AUTORELEASE_POOL_WITH_NAME(pool)
 
   NSString *text1FilePath = @"Speedtest1.txt";
   NSString *text2FilePath = @"Speedtest2.txt";
@@ -73,6 +73,7 @@ int main (int argc, const char * argv[]) {
 
   JX_RELEASE(dmp);
 
-  [pool drain];
+  JX_END_AUTORELEASE_POOL_WITH_NAME(pool)
+
   return 0;
 }
