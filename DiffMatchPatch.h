@@ -77,7 +77,7 @@ typedef enum {
   NSUInteger length2;
 }
 
-@property (nonatomic, retain) NSMutableArray *diffs;
+@property (nonatomic, strong) NSMutableArray *diffs;
 @property (nonatomic, assign) NSUInteger start1;
 @property (nonatomic, assign) NSUInteger start2;
 @property (nonatomic, assign) NSUInteger length1;

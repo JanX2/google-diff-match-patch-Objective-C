@@ -24,6 +24,7 @@
 
 #import <DiffMatchPatch/DiffMatchPatch.h>
 #import "TestUtilities.h"
+#import "JXArcCompatibilityMacros.h"
 
 
 typedef enum {
@@ -93,13 +94,13 @@ NSMutableArray * diff_withMode(NSString *text1, NSString *text2, DiffMode mode) 
     [dmp diff_chars:diffs toLines:tokenArray];
   }
   
-  [dmp release];
+  JX_RELEASE(dmp);
   
   return diffs;
 }
 
 NSMutableArray * diff_defaultMode(NSString *text1, NSString *text2) {
-  DiffMatchPatch *dmp = [[DiffMatchPatch new] autorelease];
+  DiffMatchPatch *dmp = JX_AUTORELEASE([DiffMatchPatch new]);
   
   dmp.Diff_Timeout = 0;
   NSMutableArray *diffs = [dmp diff_mainOfOldString:text1 andNewString:text2 checkLines:NO];
@@ -116,7 +117,7 @@ int main (int argc, const char * argv[]) {
   if ([cliArguments count] < 3) {
     fprintf(stderr, "usage: %s <txt1> <txt2> [default|line|word|paragraph|sentence|line-break-delimitered]\n",
             [[[NSProcessInfo processInfo] processName] UTF8String]);
-    [pool drain];
+    JX_DRAIN_AUTORELEASE_POOL_WITH_NAME(pool);
     return EXIT_FAILURE;
   }
 

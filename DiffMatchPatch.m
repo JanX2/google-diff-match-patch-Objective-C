@@ -26,6 +26,7 @@
 #import "NSString+UriCompatibility.h"
 #import "NSMutableDictionary+DMPExtensions.h"
 #import "DiffMatchPatchCFUtilities.h"
+#import "JXArcCompatibilityMacros.h"
 
 
 #if !defined(MAX_OF_CONST_AND_DIFF)
@@ -62,7 +63,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 + (id)diffWithOperation:(Operation)anOperation
                 andText:(NSString *)aText;
 {
-  return [[[self alloc] initWithOperation:anOperation andText:aText] autorelease];
+  return JX_AUTORELEASE([[self alloc] initWithOperation:anOperation andText:aText]);
 }
 
 - (id)initWithOperation:(Operation)anOperation
@@ -77,12 +78,14 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
 }
 
+#if (JX_HAS_ARC == 0)
 - (void)dealloc
 {
   self.text = nil;
 
   [super dealloc];
 }
+#endif
 
 - (id)copyWithZone:(NSZone *)zone
 {
@@ -179,18 +182,20 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   return self;
 }
 
+#if (JX_HAS_ARC == 0)
 - (void)dealloc
 {
   self.diffs = nil;
 
   [super dealloc];
 }
+#endif
 
 - (id)copyWithZone:(NSZone *)zone
 {
   Patch *newPatch = [[[self class] allocWithZone:zone] init];
 
-  newPatch.diffs = [[[NSMutableArray alloc] initWithArray:self.diffs copyItems:YES] autorelease];
+  newPatch.diffs = JX_AUTORELEASE([[NSMutableArray alloc] initWithArray:self.diffs copyItems:YES]);
   newPatch.start1 = self.start1;
   newPatch.start2 = self.start2;
   newPatch.length1 = self.length1;
@@ -285,10 +290,12 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   return self;
 }
 
+#if 0
 - (void)dealloc
 {
   [super dealloc];
 }
+#endif
 
 
 #pragma mark Diff Functions
@@ -368,13 +375,13 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   }
 
   // Trim off common prefix (speedup).
-  NSUInteger commonlength = (NSUInteger)diff_commonPrefix((CFStringRef)text1, (CFStringRef)text2);
+  NSUInteger commonlength = (NSUInteger)diff_commonPrefix(JX_BRIDGED_CAST(CFStringRef, text1), JX_BRIDGED_CAST(CFStringRef, text2));
   NSString *commonprefix = [text1 substringToIndex:commonlength];
   text1 = [text1 substringFromIndex:commonlength];
   text2 = [text2 substringFromIndex:commonlength];
 
   // Trim off common suffix (speedup).
-  commonlength = (NSUInteger)diff_commonSuffix((CFStringRef)text1, (CFStringRef)text2);
+  commonlength = (NSUInteger)diff_commonSuffix(JX_BRIDGED_CAST(CFStringRef, text1), JX_BRIDGED_CAST(CFStringRef, text2));
   NSString *commonsuffix = [text1 substringFromIndex:text1.length - commonlength];
   text1 = [text1 substringToIndex:(text1.length - commonlength)];
   text2 = [text2 substringToIndex:(text2.length - commonlength)];
@@ -403,7 +410,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSUInteger)diff_commonPrefixOfFirstString:(NSString *)text1
                              andSecondString:(NSString *)text2;
 {
-  return (NSUInteger)diff_commonPrefix((CFStringRef)text1, (CFStringRef)text2);
+  return (NSUInteger)diff_commonPrefix(JX_BRIDGED_CAST(CFStringRef, text1), JX_BRIDGED_CAST(CFStringRef, text2));
 }
 
 /**
@@ -415,7 +422,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSUInteger)diff_commonSuffixOfFirstString:(NSString *)text1
                              andSecondString:(NSString *)text2;
 {
-  return (NSUInteger)diff_commonSuffix((CFStringRef)text1, (CFStringRef)text2);
+  return (NSUInteger)diff_commonSuffix(JX_BRIDGED_CAST(CFStringRef, text1), JX_BRIDGED_CAST(CFStringRef, text2));
 }
 
 /**
@@ -428,7 +435,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSUInteger)diff_commonOverlapOfFirstString:(NSString *)text1
                               andSecondString:(NSString *)text2;
 {
-  return (NSUInteger)diff_commonOverlap((CFStringRef)text1, (CFStringRef)text2);
+  return (NSUInteger)diff_commonOverlap(JX_BRIDGED_CAST(CFStringRef, text1), JX_BRIDGED_CAST(CFStringRef, text2));
 }
 
 /**
@@ -444,7 +451,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSArray *)diff_halfMatchOfFirstString:(NSString *)text1
                          andSecondString:(NSString *)text2;
 {
-  return [NSMakeCollectable(diff_halfMatchCreate((CFStringRef)text1, (CFStringRef)text2, Diff_Timeout)) autorelease];
+  return JX_TRANSFER_CF_TO_OBJC(NSArray *, diff_halfMatchCreate(JX_BRIDGED_CAST(CFStringRef, text1), JX_BRIDGED_CAST(CFStringRef, text2), Diff_Timeout));
 }
 
 /**
@@ -461,7 +468,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                           andShortString:(NSString *)shorttext
                                    index:(NSInteger)index;
 {
-  return [NSMakeCollectable(diff_halfMatchICreate((CFStringRef)longtext, (CFStringRef)shorttext, (CFIndex)index)) autorelease];
+  return JX_TRANSFER_CF_TO_OBJC(NSArray *, diff_halfMatchICreate(JX_BRIDGED_CAST(CFStringRef, longtext), JX_BRIDGED_CAST(CFStringRef, shorttext), (CFIndex)index));
 }
 
 /**
@@ -515,7 +522,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   }
 
   // Check to see if the problem can be split in two.
-  NSArray *hm = [NSMakeCollectable(diff_halfMatchCreate((CFStringRef)text1, (CFStringRef)text2, Diff_Timeout)) autorelease];
+  NSArray *hm = JX_TRANSFER_CF_TO_OBJC(NSArray *, diff_halfMatchCreate(JX_BRIDGED_CAST(CFStringRef, text1), JX_BRIDGED_CAST(CFStringRef, text2), Diff_Timeout));
   if (hm != nil) {
     NSAutoreleasePool *splitPool = [NSAutoreleasePool new];
     // A half-match was found, sort out the return data.
@@ -528,11 +535,11 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     NSMutableArray *diffs_a = [self diff_mainOfOldString:text1_a andNewString:text2_a checkLines:checklines deadline:deadline];
     NSMutableArray *diffs_b = [self diff_mainOfOldString:text1_b andNewString:text2_b checkLines:checklines deadline:deadline];
     // Merge the results.
-    diffs = [diffs_a retain];
+    diffs = JX_RETAIN(diffs_a);
     [diffs addObject:[Diff diffWithOperation:DIFF_EQUAL andText:mid_common]];
     [diffs addObjectsFromArray:diffs_b];
     [splitPool drain];
-    return [diffs autorelease];
+    return JX_AUTORELEASE(diffs);
   }
 
   if (checklines && text1.length > 100 && text2.length > 100) {
@@ -541,10 +548,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
   NSAutoreleasePool *bisectPool = [NSAutoreleasePool new];
   diffs = [self diff_bisectOfOldString:text1 andNewString:text2 deadline:deadline];
-  [diffs retain];
+  JX_RETAIN(diffs);
   [bisectPool drain];
 
-  return [diffs autorelease];
+  return JX_AUTORELEASE(diffs);
 }
 
 /**
@@ -568,10 +575,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
   NSAutoreleasePool *recursePool = [NSAutoreleasePool new];
   NSMutableArray *diffs = [self diff_mainOfOldString:text1 andNewString:text2 checkLines:NO deadline:deadline];
-  [diffs retain];
+  JX_RETAIN(diffs);
   [recursePool drain];
 
-  [diffs autorelease];
+  JX_AUTORELEASE(diffs);
 
   // Convert the diff back to original text.
   [self diff_chars:diffs toLines:linearray];
@@ -636,9 +643,9 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                                  lineArray:(NSMutableArray *)lineArray
                                   lineHash:(NSMutableDictionary *)lineHash;
 {
-  return [NSMakeCollectable(diff_linesToCharsMungeCFStringCreate((CFStringRef)text,
-                                                                 (CFMutableArrayRef)lineArray,
-                                                                 (CFMutableDictionaryRef)lineHash)) autorelease];
+  return JX_TRANSFER_CF_TO_OBJC(NSString *, diff_linesToCharsMungeCFStringCreate(JX_BRIDGED_CAST(CFStringRef, text),
+                                                                                 JX_BRIDGED_CAST(CFMutableArrayRef, lineArray),
+                                                                                 JX_BRIDGED_CAST(CFMutableDictionaryRef, lineHash)));
 }
 
 /**
@@ -653,9 +660,9 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                                  wordArray:(NSMutableArray *)wordArray
                                   wordHash:(NSMutableDictionary *)wordHash;
 {
-  return [NSMakeCollectable(diff_wordsToCharsMungeCFStringCreate((CFStringRef)text,
-                                                                 (CFMutableArrayRef)wordArray,
-                                                                 (CFMutableDictionaryRef)wordHash)) autorelease];
+  return JX_TRANSFER_CF_TO_OBJC(NSString *, diff_wordsToCharsMungeCFStringCreate(JX_BRIDGED_CAST(CFStringRef, text),
+                                                                                 JX_BRIDGED_CAST(CFMutableArrayRef, wordArray),
+                                                                                 JX_BRIDGED_CAST(CFMutableDictionaryRef, wordHash)));
 }
 
 /**
@@ -670,9 +677,9 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                                  sentenceArray:(NSMutableArray *)sentenceArray
                                   sentenceHash:(NSMutableDictionary *)sentenceHash;
 {
-  return [NSMakeCollectable(diff_sentencesToCharsMungeCFStringCreate((CFStringRef)text,
-                                                                     (CFMutableArrayRef)sentenceArray,
-                                                                     (CFMutableDictionaryRef)sentenceHash)) autorelease];
+  return JX_TRANSFER_CF_TO_OBJC(NSString *, diff_sentencesToCharsMungeCFStringCreate(JX_BRIDGED_CAST(CFStringRef, text),
+                                                                                     JX_BRIDGED_CAST(CFMutableArrayRef, sentenceArray),
+                                                                                     JX_BRIDGED_CAST(CFMutableDictionaryRef, sentenceHash)));
 }
 
 /**
@@ -687,9 +694,9 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                                  paragraphArray:(NSMutableArray *)paragraphArray
                                   paragraphHash:(NSMutableDictionary *)paragraphHash;
 {
-  return [NSMakeCollectable(diff_paragraphsToCharsMungeCFStringCreate((CFStringRef)text,
-                                                                      (CFMutableArrayRef)paragraphArray,
-                                                                      (CFMutableDictionaryRef)paragraphHash)) autorelease];
+  return JX_TRANSFER_CF_TO_OBJC(NSString *, diff_paragraphsToCharsMungeCFStringCreate(JX_BRIDGED_CAST(CFStringRef, text),
+                                                                                      JX_BRIDGED_CAST(CFMutableArrayRef, paragraphArray),
+                                                                                      JX_BRIDGED_CAST(CFMutableDictionaryRef, paragraphHash)));
 }
 
 /**
@@ -706,9 +713,9 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                                                 lineArray:(NSMutableArray *)lineArray
                                                  lineHash:(NSMutableDictionary *)lineHash;
 {
-  return [NSMakeCollectable(diff_lineBreakDelimiteredToCharsMungeCFStringCreate((CFStringRef)text,
-                                                                                (CFMutableArrayRef)lineArray,
-                                                                                (CFMutableDictionaryRef)lineHash)) autorelease];
+  return JX_TRANSFER_CF_TO_OBJC(NSString *, diff_lineBreakDelimiteredToCharsMungeCFStringCreate(JX_BRIDGED_CAST(CFStringRef, text),
+                                                                                                JX_BRIDGED_CAST(CFMutableArrayRef, lineArray),
+                                                                                                JX_BRIDGED_CAST(CFMutableDictionaryRef, lineHash)));
 }
 
 /**
@@ -733,8 +740,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   
   BOOL validDeadline = (deadline != [[NSDate distantFuture] timeIntervalSinceReferenceDate]);
   
-  CFStringRef text1 = (CFStringRef)_text1;
-  CFStringRef text2 = (CFStringRef)_text2;
+  CFStringRef text1 = JX_BRIDGED_CAST(CFStringRef, _text1);
+  CFStringRef text2 = JX_BRIDGED_CAST(CFStringRef, _text2);
 
   // Cache the text lengths to prevent multiple calls.
   CFIndex text1_length = CFStringGetLength(text1);
@@ -934,17 +941,14 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   // So we'll insert a junk entry to avoid generating a nil character.
   [lineArray addObject:@""];
 
-  NSString *chars1 = NSMakeCollectable(diff_linesToCharsMungeCFStringCreate((CFStringRef)text1,
-                                                                            (CFMutableArrayRef)lineArray,
-                                                                            lineHash));
-  NSString *chars2 = NSMakeCollectable(diff_linesToCharsMungeCFStringCreate((CFStringRef)text2,
-                                                                            (CFMutableArrayRef)lineArray,
-                                                                            lineHash));
+  NSString *chars1 = JX_TRANSFER_CF_TO_OBJC(NSString *, diff_linesToCharsMungeCFStringCreate(JX_BRIDGED_CAST(CFStringRef, text1),
+                                                                                             JX_BRIDGED_CAST(CFMutableArrayRef, lineArray),
+                                                                                             lineHash));
+  NSString *chars2 = JX_TRANSFER_CF_TO_OBJC(NSString *, diff_linesToCharsMungeCFStringCreate(JX_BRIDGED_CAST(CFStringRef, text2),
+                                                                                             JX_BRIDGED_CAST(CFMutableArrayRef, lineArray),
+                                                                                             lineHash));
   
   NSArray *result = [NSArray arrayWithObjects:chars1, chars2, lineArray, nil];
-
-  [chars1 release];
-  [chars2 release];
 
   CFRelease(lineHash);
 
@@ -999,19 +1003,16 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   // So we'll insert a junk entry to avoid generating a nil character.
   [tokenArray addObject:@""];
   
-  NSString *tokens1 = NSMakeCollectable(diff_tokensToCharsMungeCFStringCreate((CFStringRef)text1,
-                                                                              (CFMutableArrayRef)tokenArray,
-                                                                              tokenHash,
-                                                                              tokenizerOptions));
-  NSString *tokens2 = NSMakeCollectable(diff_tokensToCharsMungeCFStringCreate((CFStringRef)text2,
-                                                                              (CFMutableArrayRef)tokenArray,
-                                                                              tokenHash,
-                                                                              tokenizerOptions));
+  NSString *tokens1 = JX_TRANSFER_CF_TO_OBJC(NSString *, diff_tokensToCharsMungeCFStringCreate(JX_BRIDGED_CAST(CFStringRef, text1),
+                                                                                               JX_BRIDGED_CAST(CFMutableArrayRef, tokenArray),
+                                                                                               tokenHash,
+                                                                                               tokenizerOptions));
+  NSString *tokens2 = JX_TRANSFER_CF_TO_OBJC(NSString *, diff_tokensToCharsMungeCFStringCreate(JX_BRIDGED_CAST(CFStringRef, text2),
+                                                                                               JX_BRIDGED_CAST(CFMutableArrayRef, tokenArray),
+                                                                                               tokenHash,
+                                                                                               tokenizerOptions));
   
   NSArray *result = [NSArray arrayWithObjects:tokens1, tokens2, tokenArray, nil];
-  
-  [tokens1 release];
-  [tokens2 release];
   
   CFRelease(tokenHash);
   
@@ -1043,9 +1044,9 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  */
 NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tokenArray)
 {
-  CFStringRef text = diff_charsToTokenCFStringCreate((CFStringRef)charsString, (CFArrayRef)tokenArray);
+  CFStringRef text = diff_charsToTokenCFStringCreate(JX_BRIDGED_CAST(CFStringRef, charsString), JX_BRIDGED_CAST(CFArrayRef, tokenArray));
   
-  return [NSMakeCollectable(text) autorelease];
+  return JX_TRANSFER_CF_TO_OBJC(NSString *, text);
 }
 
 /**
@@ -1122,7 +1123,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
         if (count_delete + count_insert > 1) {
           if (count_delete != 0 && count_insert != 0) {
             // Factor out any common prefixes.
-            commonlength = (NSUInteger)diff_commonPrefix((CFStringRef)text_insert, (CFStringRef)text_delete);
+            commonlength = (NSUInteger)diff_commonPrefix(JX_BRIDGED_CAST(CFStringRef, text_insert), JX_BRIDGED_CAST(CFStringRef, text_delete));
             if (commonlength != 0) {
               if ((thisPointer - count_delete - count_insert) > 0 &&
                   ((Diff *)[diffs objectAtIndex:(thisPointer - count_delete - count_insert - 1)]).operation
@@ -1140,7 +1141,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
               text_delete = [text_delete substringFromIndex:commonlength];
             }
             // Factor out any common suffixes.
-            commonlength = (NSUInteger)diff_commonSuffix((CFStringRef)text_insert, (CFStringRef)text_delete);
+            commonlength = (NSUInteger)diff_commonSuffix(JX_BRIDGED_CAST(CFStringRef, text_insert), JX_BRIDGED_CAST(CFStringRef, text_delete));
             if (commonlength != 0) {
               thisDiff.text = [[text_insert substringFromIndex:(text_insert.length
                   - commonlength)] stringByAppendingString:thisDiff.text];
@@ -1249,7 +1250,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
       NSString *equality2 = nextDiff.text;
 
       // First, shift the edit as far left as possible.
-      NSUInteger commonOffset = (NSUInteger)diff_commonSuffix((CFStringRef)equality1, (CFStringRef)edit);
+      NSUInteger commonOffset = (NSUInteger)diff_commonSuffix(JX_BRIDGED_CAST(CFStringRef, equality1), JX_BRIDGED_CAST(CFStringRef, edit));
 
       if (commonOffset > 0) {
         NSString *commonString = [edit substringFromIndex:(edit.length - commonOffset)];
@@ -1263,15 +1264,15 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
       NSString *bestEquality1 = equality1;
       NSString *bestEdit = edit;
       NSString *bestEquality2 = equality2;
-      CFIndex bestScore = diff_cleanupSemanticScore((CFStringRef)equality1, (CFStringRef)edit) +
-      diff_cleanupSemanticScore((CFStringRef)edit, (CFStringRef)equality2);
+      CFIndex bestScore = diff_cleanupSemanticScore(JX_BRIDGED_CAST(CFStringRef, equality1), JX_BRIDGED_CAST(CFStringRef, edit)) +
+      diff_cleanupSemanticScore(JX_BRIDGED_CAST(CFStringRef, edit), JX_BRIDGED_CAST(CFStringRef, equality2));
       while (edit.length != 0 && equality2.length != 0
            && [edit characterAtIndex:0] == [equality2 characterAtIndex:0]) {
         equality1 = [equality1 stringByAppendingString:[edit substringToIndex:1]];
         edit = [[edit substringFromIndex:1] stringByAppendingString:[equality2 substringToIndex:1]];
         equality2 = [equality2 substringFromIndex:1];
-        CFIndex score = diff_cleanupSemanticScore((CFStringRef)equality1, (CFStringRef)edit) +
-        diff_cleanupSemanticScore((CFStringRef)edit, (CFStringRef)equality2);
+        CFIndex score = diff_cleanupSemanticScore(JX_BRIDGED_CAST(CFStringRef, equality1), JX_BRIDGED_CAST(CFStringRef, edit)) +
+        diff_cleanupSemanticScore(JX_BRIDGED_CAST(CFStringRef, edit), JX_BRIDGED_CAST(CFStringRef, equality2));
         // The >= encourages trailing rather than leading whitespace on edits.
         if (score >= bestScore) {
           bestScore = score;
@@ -1317,7 +1318,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
 - (NSInteger)diff_cleanupSemanticScoreOfFirstString:(NSString *)one
                                     andSecondString:(NSString *)two;
 {
-  return diff_cleanupSemanticScore((CFStringRef)one, (CFStringRef)two);
+  return diff_cleanupSemanticScore(JX_BRIDGED_CAST(CFStringRef, one), JX_BRIDGED_CAST(CFStringRef, two));
 }
 
 /**
@@ -1432,7 +1433,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
 {
   NSMutableString *html = [NSMutableString string];
   for (Diff *aDiff in diffs) {
-    NSMutableString *text = [[aDiff.text mutableCopy] autorelease];
+    NSMutableString *text = JX_AUTORELEASE([aDiff.text mutableCopy]);
     [text replaceOccurrencesOfString:@"&" withString:@"&amp;" options:NSLiteralSearch range:NSMakeRange(0, text.length)];
     [text replaceOccurrencesOfString:@"<" withString:@"&lt;" options:NSLiteralSearch range:NSMakeRange(0, text.length)];
     [text replaceOccurrencesOfString:@">" withString:@"&gt;" options:NSLiteralSearch range:NSMakeRange(0, text.length)];
@@ -1546,6 +1547,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
     NSString *param = [token substringFromIndex:1];
     switch ([token characterAtIndex:0]) {
       case '+':
+      {
         param = [param diff_stringByReplacingPercentEscapesForEncodeUriCompatibility];
         if (param == nil) {
           if (error != NULL) {
@@ -1558,9 +1560,11 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
         }
         [diffs addObject:[Diff diffWithOperation:DIFF_INSERT andText:param]];
         break;
+      }
       case '-':
         // Fall through.
       case '=':
+      {
         n = [param integerValue];
         if (n == 0) {
           if (error != NULL) {
@@ -1601,7 +1605,9 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
           [diffs addObject:[Diff diffWithOperation:DIFF_DELETE andText:text]];
         }
         break;
+      }
       default:
+      {
         // Anything else is an error.
         if (error != NULL) {
           errorDetail = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -1611,6 +1617,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
           *error = [NSError errorWithDomain:@"DiffMatchPatchErrorDomain" code:102 userInfo:errorDetail];
         }
         return nil;
+      }
     }
   }
   if (thisPointer != text1.length) {
@@ -1801,8 +1808,8 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
     if (prevDiff.operation == DIFF_DELETE && thisDiff.operation == DIFF_INSERT) {
       NSString *deletion = prevDiff.text;
       NSString *insertion = thisDiff.text;
-      NSUInteger overlap_length1 = (NSUInteger)diff_commonOverlap((CFStringRef)deletion, (CFStringRef)insertion);
-      NSUInteger overlap_length2 = (NSUInteger)diff_commonOverlap((CFStringRef)insertion, (CFStringRef)deletion);
+      NSUInteger overlap_length1 = (NSUInteger)diff_commonOverlap(JX_BRIDGED_CAST(CFStringRef, deletion), JX_BRIDGED_CAST(CFStringRef, insertion));
+      NSUInteger overlap_length2 = (NSUInteger)diff_commonOverlap(JX_BRIDGED_CAST(CFStringRef, insertion), JX_BRIDGED_CAST(CFStringRef, deletion));
       if (overlap_length1 >= overlap_length2) {
         if (overlap_length1 >= deletion.length / 2.0f ||
             overlap_length1 >= insertion.length / 2.0f) {
@@ -1811,10 +1818,12 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
           [diffs insertObject:[Diff diffWithOperation:DIFF_EQUAL
                                               andText:[insertion substringToIndex:overlap_length1]]
                       atIndex:thisPointer];
-          [insertion retain];
+#if (JX_HAS_ARC == 0)
+          JX_RETAIN(insertion);
+#endif
           prevDiff.text = [deletion substringToIndex:(deletion.length - overlap_length1)];
           nextDiff.text = [insertion substringFromIndex:overlap_length1];
-          [insertion release];
+          JX_RELEASE(insertion);
           thisPointer++;
         }
       } else {
@@ -1825,12 +1834,14 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
           [diffs insertObject:[Diff diffWithOperation:DIFF_EQUAL
                                               andText:[deletion substringToIndex:overlap_length2]]
                       atIndex:thisPointer];
-          [deletion retain];
+#if (JX_HAS_ARC == 0)
+          JX_RETAIN(deletion);
+#endif
           prevDiff.operation = DIFF_INSERT;
           prevDiff.text = [insertion substringToIndex:(insertion.length - overlap_length2)];
           nextDiff.operation = DIFF_DELETE;
           nextDiff.text = [deletion substringFromIndex:overlap_length2];
-          [deletion release];
+          JX_RELEASE(deletion);
           thisPointer++;
         }
       }
@@ -2049,7 +2060,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
 - (NSMutableDictionary *)match_alphabet:(NSString *)pattern;
 {
   NSMutableDictionary *s = [NSMutableDictionary dictionary];
-  CFStringRef str = (CFStringRef)pattern;
+  CFStringRef str = JX_BRIDGED_CAST(CFStringRef, pattern);
   CFStringInlineBuffer inlineBuffer;
   CFIndex length;
   CFIndex cnt;
@@ -2062,8 +2073,8 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
   for (cnt = 0; cnt < length; cnt++) {
     ch = CFStringGetCharacterFromInlineBuffer(&inlineBuffer, cnt);
     c = diff_CFStringCreateFromUnichar(ch);
-    if (![s diff_containsObjectForKey:(NSString *)c]) {
-      [s diff_setUnsignedIntegerValue:0 forKey:(NSString *)c];
+    if (![s diff_containsObjectForKey:JX_BRIDGED_CAST(NSString *, c)]) {
+      [s diff_setUnsignedIntegerValue:0 forKey:JX_BRIDGED_CAST(NSString *, c)];
     }
     CFRelease(c);
   }
@@ -2072,8 +2083,8 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
   for (cnt = 0; cnt < length; cnt++) {
     ch = CFStringGetCharacterFromInlineBuffer(&inlineBuffer, cnt);
     c = diff_CFStringCreateFromUnichar(ch);
-    NSUInteger value = [s diff_unsignedIntegerForKey:(NSString *)c] | (1 << (pattern.length - i - 1));
-    [s diff_setUnsignedIntegerValue:value forKey:(NSString *)c];
+    NSUInteger value = [s diff_unsignedIntegerForKey:JX_BRIDGED_CAST(NSString *, c)] | (1 << (pattern.length - i - 1));
+    [s diff_setUnsignedIntegerValue:value forKey:JX_BRIDGED_CAST(NSString *, c)];
     i++;
     CFRelease(c);
   }
@@ -2215,13 +2226,13 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
   if (diffs.count == 0) {
     return patches;   // Get rid of the nil case.
   }
-  Patch *patch = [[Patch new] autorelease];
+  Patch *patch = JX_AUTORELEASE([Patch new]);
   NSUInteger char_count1 = 0;  // Number of characters into the text1 NSString.
   NSUInteger char_count2 = 0;  // Number of characters into the text2 NSString.
   // Start with text1 (prepatch_text) and apply the diffs until we arrive at
   // text2 (postpatch_text). We recreate the patches one by one to determine
   // context info.
-  NSString *prepatch_text = [text1 retain];
+  NSString *prepatch_text = JX_RETAIN(text1);
   NSMutableString *postpatch_text = [text1 mutableCopy];
   for (Diff *aDiff in diffs) {
     if (patch.diffs.count == 0 && aDiff.operation != DIFF_EQUAL) {
@@ -2255,12 +2266,12 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
           if (patch.diffs.count != 0) {
             [self patch_addContextToPatch:patch sourceText:prepatch_text];
             [patches addObject:patch];
-            patch = [[Patch new] autorelease];
+            patch = JX_AUTORELEASE([Patch new]);
             // Unlike Unidiff, our patch lists have a rolling context.
             // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
             // Update prepatch text & pos to reflect the application of the
             // just completed patch.
-            [prepatch_text release];
+            JX_RELEASE(prepatch_text);
             prepatch_text = [postpatch_text copy];
             char_count1 = char_count2;
           }
@@ -2282,8 +2293,8 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
     [patches addObject:patch];
   }
 
-  [prepatch_text release];
-  [postpatch_text release];
+  JX_RELEASE(prepatch_text);
+  JX_RELEASE(postpatch_text);
 
   return patches;
 }
@@ -2315,9 +2326,9 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
   }
 
   // Deep copy the patches so that no changes are made to originals.
-  NSMutableArray *patches = [[self patch_deepCopy:sourcePatches] autorelease];
+  NSMutableArray *patches = JX_AUTORELEASE([self patch_deepCopy:sourcePatches]);
 
-  NSMutableString *textMutable = [[text mutableCopy] autorelease];
+  NSMutableString *textMutable = JX_AUTORELEASE([text mutableCopy]);
 
   NSString *nullPadding = [self patch_addPadding:patches];
   [textMutable insertString:nullPadding atIndex:0];
@@ -2435,7 +2446,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
   uint16_t paddingLength = Patch_Margin;
   NSMutableString *nullPadding = [NSMutableString string];
   for (UniChar x = 1; x <= paddingLength; x++) {
-    CFStringAppendCharacters((CFMutableStringRef)nullPadding, &x, 1);
+    CFStringAppendCharacters(JX_BRIDGED_CAST(CFMutableStringRef, nullPadding), &x, 1);
   }
 
   // Bump all the patches forward.
@@ -2499,7 +2510,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
     if (((Patch *)[patches objectAtIndex:x]).length1 <= patch_size) {
       continue;
     }
-    Patch *bigpatch = [[patches objectAtIndex:x] retain];
+    Patch *bigpatch = JX_RETAIN([patches objectAtIndex:x]);
     // Remove the big old patch.
     splice(patches, x--, 1, nil);
     NSUInteger start1 = bigpatch.start1;
@@ -2507,7 +2518,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
     NSString *precontext = @"";
     while (bigpatch.diffs.count != 0) {
       // Create one of several smaller patches.
-      Patch *patch = [[Patch new] autorelease];
+      Patch *patch = JX_AUTORELEASE([Patch new]);
       BOOL empty = YES;
       patch.start1 = start1 - precontext.length;
       patch.start2 = start2 - precontext.length;
@@ -2587,7 +2598,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
       }
     }
     
-    [bigpatch release];
+    JX_RELEASE(bigpatch);
     
   }
 }
@@ -2638,7 +2649,7 @@ NS_INLINE NSString * diff_charsToTokenString(NSString *charsString, NSArray *tok
   while (textPointer < text.count) {
     NSString *thisLine = [text objectAtIndex:textPointer];
     NSScanner *theScanner = [NSScanner scannerWithString:thisLine];
-    patch = [[Patch new] autorelease];
+    patch = JX_AUTORELEASE([Patch new]);
 
     scanSuccess = ([theScanner scanString:patchHeaderStart intoString:NULL]
         && [theScanner scanInteger:&scannedValue]);

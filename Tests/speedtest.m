@@ -24,6 +24,7 @@
 
 #import <DiffMatchPatch/DiffMatchPatch.h>
 #import "TestUtilities.h"
+#import "JXArcCompatibilityMacros.h"
 
 void diff_measureTimeForDiff(DiffMatchPatch *dmp, NSString *text1, NSString *text2, NSString *aDescription);
 
@@ -70,7 +71,7 @@ int main (int argc, const char * argv[]) {
   aDescription = [NSString stringWithFormat:@"%8lu unichars, ", (unsigned long)MAX(text1.length, text2.length)];
   diff_measureTimeForDiff(dmp, text1, text2, aDescription);
 
-  [dmp release];
+  JX_RELEASE(dmp);
 
   [pool drain];
   return 0;

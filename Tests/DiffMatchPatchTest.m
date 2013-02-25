@@ -24,6 +24,7 @@
 
 #import "DiffMatchPatch.h"
 #import "NSMutableDictionary+DMPExtensions.h"
+#import "JXArcCompatibilityMacros.h"
 
 #define stringForBOOL(A)  ([((NSNumber *)A) boolValue] ? @"true" : @"false")
 
@@ -46,7 +47,7 @@
   // Whole case.
   STAssertEquals((NSUInteger)4, [dmp diff_commonPrefixOfFirstString:@"1234" andSecondString:@"1234xyz"], @"Common suffix whole case failed.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_commonSuffixTest {
@@ -62,7 +63,7 @@
   // Whole case.
   STAssertEquals((NSUInteger)4, [dmp diff_commonSuffixOfFirstString:@"1234" andSecondString:@"xyz1234"], @"Detect any common suffix. Whole case.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_commonOverlapTest {
@@ -86,7 +87,7 @@
   // component letters.  E.g. U+FB01 == 'fi'
   STAssertEquals((NSUInteger)0, [dmp diff_commonOverlapOfFirstString:@"fi" andSecondString:@"\U0000fb01i"], @"Detect any suffix/prefix overlap. Unicode.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_halfmatchTest {
@@ -131,7 +132,7 @@
   dmp.Diff_Timeout = 0;
   STAssertNil([dmp diff_halfMatchOfFirstString:@"qHilloHelloHew" andSecondString:@"xHelloHeHulloy"], @"Optimal no halfmatch.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_linesToCharsTest {
@@ -187,7 +188,7 @@
   STAssertEqualObjects(@"", [result objectAtIndex:1], @"More than 256 #4.");
   STAssertEqualObjects(tmpVector, (NSArray *)[result objectAtIndex:2], @"More than 256 #5.");
   
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_wordsToCharsTest {
@@ -255,7 +256,7 @@
   STAssertEqualObjects(@"", [result objectAtIndex:1], @"Convert words down to characters #13");
   STAssertEqualObjects(tmpVector, (NSArray *)[result objectAtIndex:2], @"Convert words down to characters #14");
   
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_charsToLinesTest {
@@ -294,7 +295,7 @@
   [dmp diff_chars:diffs toLines:tmpVector];
   STAssertEqualObjects([NSArray arrayWithObject:[Diff diffWithOperation:DIFF_DELETE andText:lines]], diffs, @"More than 256 #3.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_cleanupMergeTest {
@@ -373,7 +374,7 @@
   expectedResult = [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_EQUAL andText:@"xca"], [Diff diffWithOperation:DIFF_DELETE andText:@"cba"], nil];
   STAssertEqualObjects(expectedResult, diffs, @"Slide edit right recursive.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_cleanupSemanticLosslessTest {
@@ -468,7 +469,7 @@
                     [Diff diffWithOperation:DIFF_EQUAL andText:@" The yyy."], nil];
   STAssertEqualObjects(expectedResult, diffs, @"Sentence boundaries.");
   
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_cleanupSemanticTest {
@@ -612,7 +613,7 @@
                     [Diff diffWithOperation:DIFF_INSERT andText:@"BC"], nil];
   STAssertEqualObjects(expectedResult, diffs, @"Two overlap eliminations.");
   
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_cleanupEfficiencyTest {
@@ -697,7 +698,7 @@
   STAssertEqualObjects(expectedResult, diffs, @"High cost elimination.");
   dmp.Diff_EditCost = 4;
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_prettyHtmlTest {
@@ -711,7 +712,7 @@
   NSString *expectedResult = @"<span>a&para;<br></span><del style=\"background:#ffe6e6;\">&lt;B&gt;b&lt;/B&gt;</del><ins style=\"background:#e6ffe6;\">c&amp;d</ins>";
   STAssertEqualObjects(expectedResult, [dmp diff_prettyHtml:diffs], @"Pretty print.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_textTest {
@@ -730,7 +731,7 @@
 
   STAssertEqualObjects(@"jumped over a lazy", [dmp diff_text2:diffs], @"Compute the source and destination texts #2");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_deltaTest {
@@ -809,7 +810,7 @@
   expectedResult = [dmp diff_fromDeltaWithText:@"" andDelta:delta error:NULL];
   STAssertEqualObjects(diffs, expectedResult, @"diff_fromDelta: Unchanged characters. Convert delta string into a diff.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_xIndexTest {
@@ -828,7 +829,7 @@
       [Diff diffWithOperation:DIFF_EQUAL andText:@"xyz"], nil] /* Diff */;
   STAssertEquals((NSUInteger)1, [dmp diff_xIndexIn:diffs location:3], @"diff_xIndex: Translation on deletion.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_levenshteinTest {
@@ -852,7 +853,7 @@
       [Diff diffWithOperation:DIFF_INSERT andText:@"1234"], nil] /* Diff */;
   STAssertEquals((NSUInteger)7, [dmp diff_levenshtein:diffs], @"diff_levenshtein: Levenshtein with middle equality.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)diff_bisectTest;
@@ -872,7 +873,7 @@
   diffs = [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_DELETE andText:@"cat"], [Diff diffWithOperation:DIFF_INSERT andText:@"map"], nil];
   STAssertEqualObjects(diffs, [dmp diff_bisectOfOldString:a andNewString:b deadline:[[NSDate distantPast] timeIntervalSinceReferenceDate]], @"Bisect timeout.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_diff_mainTest {
@@ -964,7 +965,7 @@
 
   // CHANGEME: Test null inputs
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 
@@ -989,7 +990,7 @@
   [bitmask diff_setUnsignedIntegerValue:8 forUnicharKey:'c'];
   STAssertEqualObjects(bitmask, [dmp match_alphabet:@"abcaba"], @"match_alphabet: Duplicates.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_match_bitapTest {
@@ -1038,7 +1039,7 @@
   dmp.Match_Distance = 1000;  // Loose location.
   STAssertEquals((NSUInteger)0, [dmp match_bitapOfText:@"abcdefghijklmnopqrstuvwxyz" andPattern:@"abcdefg" near:24], @"match_bitap: Distance test #3.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_match_mainTest {
@@ -1063,7 +1064,7 @@
 
   // CHANGEME: Test null inputs
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 
@@ -1073,7 +1074,7 @@
 
 - (void)test_patch_patchObjTest {
   // Patch Object.
-  Patch *p = [[Patch new] autorelease];
+  Patch *p = JX_AUTORELEASE([Patch new]);
   p.start1 = 20;
   p.start2 = 21;
   p.length1 = 18;
@@ -1113,7 +1114,7 @@
   }
   error = nil;
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_patch_toTextTest {
@@ -1128,7 +1129,7 @@
   patches = [dmp patch_fromText:strp error:NULL];
   STAssertEqualObjects(strp, [dmp patch_toText:patches], @"toText Test #2");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_patch_addContextTest {
@@ -1152,7 +1153,7 @@
   [dmp patch_addContextToPatch:p sourceText:@"The quick brown fox jumps.  The quick brown fox crashes."];
   STAssertEqualObjects(@"@@ -1,27 +1,28 @@\n Th\n-e\n+at\n  quick brown fox jumps. \n", [p description], @"patch_addContext: Ambiguity.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_patch_makeTest {
@@ -1209,7 +1210,7 @@
 
   // CHANGEME: Test null inputs
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 
@@ -1235,7 +1236,7 @@
   [dmp patch_splitMax:patches];
   STAssertEqualObjects(@"@@ -2,32 +2,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n@@ -29,32 +29,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n", [dmp patch_toText:patches], @"Assumes that Match_MaxBits is 32 #4");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_patch_addPaddingTest {
@@ -1269,7 +1270,7 @@
       [dmp patch_toText:patches],
       @"patch_addPadding: Both edges none.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 - (void)test_patch_applyTest {
@@ -1359,7 +1360,7 @@
   resultStr = [NSString stringWithFormat:@"%@\t%@", [results objectAtIndex:0], stringForBOOL([boolArray objectAtIndex:0])];
   STAssertEqualObjects(@"x123\ttrue", resultStr, @"patch_apply: Edge partial match.");
 
-  [dmp release];
+  JX_RELEASE(dmp);
 }
 
 

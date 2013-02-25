@@ -20,6 +20,7 @@
  */
 
 #import "TestUtilities.h"
+#import "JXArcCompatibilityMacros.h"
 
 NSString * diff_stringForFilePath(NSString *aFilePath) {
   NSString *absoluteFilePath;
@@ -58,9 +59,9 @@ NSString * diff_stringForURL(NSURL *aURL) {
   
   // For performance reasons, NSAttributedString’s -string method returns the current backing store of the attributed string object. 
   // We need to make a copy or we will get a zombie soon after releasing attributedString below. 
-  NSString *string = [[[attributedString string] copy] autorelease];
+  NSString *string = JX_AUTORELEASE([[attributedString string] copy]);
   
-  [attributedString release];
+  JX_RELEASE(attributedString);
   
   return string;
 }
