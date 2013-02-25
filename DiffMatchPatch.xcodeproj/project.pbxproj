@@ -81,6 +81,7 @@
 		3DA642BC128DEF4900B33CE9 /* MinMaxMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MinMaxMacros.h; sourceTree = "<group>"; };
 		3DC87023129FF4B6001F602B /* NSString+JavaSubstring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+JavaSubstring.h"; sourceTree = "<group>"; };
 		3DC87024129FF4B6001F602B /* NSString+JavaSubstring.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+JavaSubstring.m"; sourceTree = "<group>"; };
+		3DEB56D916DBA4C300D11FA5 /* JXArcCompatibilityMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JXArcCompatibilityMacros.h; sourceTree = "<group>"; };
 		3DEE4C70129D484D00885485 /* NSMutableDictionary+DMPExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+DMPExtensions.h"; sourceTree = "<group>"; };
 		3DEE4C71129D484D00885485 /* NSMutableDictionary+DMPExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+DMPExtensions.m"; sourceTree = "<group>"; };
 		3DFF2F3613C2105300DC564A /* TestUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtilities.h; sourceTree = "<group>"; };
@@ -213,6 +214,7 @@
 				3DA642BC128DEF4900B33CE9 /* MinMaxMacros.h */,
 				3DA6416F128DDA3400B33CE9 /* DiffMatchPatchCFUtilities.h */,
 				3DA64170128DDA3400B33CE9 /* DiffMatchPatchCFUtilities.c */,
+				3DEB56D916DBA4C300D11FA5 /* JXArcCompatibilityMacros.h */,
 			);
 			indentWidth = 2;
 			name = "Other Sources";
