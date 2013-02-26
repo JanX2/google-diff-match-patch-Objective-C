@@ -55,11 +55,6 @@ Porting help (pretty crude, could use improvement):
 #define JX_TRANSFER_OBJC_TO_CF(_type, _o) (__bridge_retained _type)(_o)
 #define JX_TRANSFER_CF_TO_OBJC(_type, _o) (__bridge_transfer _type)(_o)
 
-#define JX_NEW_AUTORELEASE_POOL_WITH_NAME(_o) @autoreleasepool {
-#define JX_END_AUTORELEASE_POOL_WITH_NAME(_o) }
-
-#define JX_DRAIN_AUTORELEASE_POOL_WITH_NAME(_o)
-
 #else
 
 #define JX_HAS_ARC 0
@@ -70,6 +65,18 @@ Porting help (pretty crude, could use improvement):
 #define JX_BRIDGED_CAST(_type, _o) (_type)(_o)
 #define JX_TRANSFER_OBJC_TO_CF(_type, _o) (_type)((_o) ? CFRetain((CFTypeRef)(_o)) : NULL)
 #define JX_TRANSFER_CF_TO_OBJC(_type, _o) [(_type)CFMakeCollectable(_o) autorelease]
+
+#endif
+
+
+#ifdef __clang__
+
+#define JX_NEW_AUTORELEASE_POOL_WITH_NAME(_o) @autoreleasepool {
+#define JX_END_AUTORELEASE_POOL_WITH_NAME(_o) }
+
+#define JX_DRAIN_AUTORELEASE_POOL_WITH_NAME(_o)
+
+#else
 
 #define JX_NEW_AUTORELEASE_POOL_WITH_NAME(_o) NSAutoreleasePool *(_o) = [NSAutoreleasePool new];
 #define JX_END_AUTORELEASE_POOL_WITH_NAME(_o) [(_o) drain];
