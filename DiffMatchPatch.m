@@ -939,6 +939,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   // So we'll insert a junk entry to avoid generating a nil character.
   [lineArray addObject:@""];
 
+  NSArray *result;
+  JX_NEW_AUTORELEASE_POOL_WITH_NAME(mungePool)
   NSString *chars1 = JX_TRANSFER_CF_TO_OBJC(NSString *, diff_linesToCharsMungeCFStringCreate(JX_BRIDGED_CAST(CFStringRef, text1),
                                                                                              JX_BRIDGED_CAST(CFMutableArrayRef, lineArray),
                                                                                              lineHash));
@@ -946,11 +948,12 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                                                                                              JX_BRIDGED_CAST(CFMutableArrayRef, lineArray),
                                                                                              lineHash));
   
-  NSArray *result = [NSArray arrayWithObjects:chars1, chars2, lineArray, nil];
+  result = [[NSArray alloc] initWithObjects:chars1, chars2, lineArray, nil];
 
   CFRelease(lineHash);
+  JX_END_AUTORELEASE_POOL_WITH_NAME(mungePool)
 
-  return result;
+  return JX_AUTORELEASE(result);
 }
 
 + (CFOptionFlags)tokenizerOptionsForMode:(DiffTokenMode)mode;
@@ -1001,6 +1004,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   // So we'll insert a junk entry to avoid generating a nil character.
   [tokenArray addObject:@""];
   
+  NSArray *result;
+  JX_NEW_AUTORELEASE_POOL_WITH_NAME(mungePool)
   NSString *tokens1 = JX_TRANSFER_CF_TO_OBJC(NSString *, diff_tokensToCharsMungeCFStringCreate(JX_BRIDGED_CAST(CFStringRef, text1),
                                                                                                JX_BRIDGED_CAST(CFMutableArrayRef, tokenArray),
                                                                                                tokenHash,
@@ -1010,11 +1015,12 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                                                                                                tokenHash,
                                                                                                tokenizerOptions));
   
-  NSArray *result = [NSArray arrayWithObjects:tokens1, tokens2, tokenArray, nil];
+  result = [[NSArray alloc] initWithObjects:tokens1, tokens2, tokenArray, nil];
   
   CFRelease(tokenHash);
+  JX_END_AUTORELEASE_POOL_WITH_NAME(mungePool)
   
-  return result;
+  return JX_AUTORELEASE(result);
 }
 
 /**
