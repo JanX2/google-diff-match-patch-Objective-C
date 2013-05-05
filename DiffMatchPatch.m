@@ -701,7 +701,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  * Split a text into a list of strings.  Reduce the texts to a string of
  * hashes where each Unicode character represents one text fragment delimitered by line breaks (including the trailing line break characters if any).
  * In this context “line break” does not refere to “something you get when you press the return-key”. 
- * Instead it the refers to “line break boundaries” as defined in “UAX #14: Unicode Line Breaking Algorithm” (http://www.unicode.org/reports/tr14/). 
+ * Instead it refers to “line break boundaries” as defined in “UAX #14: Unicode Line Breaking Algorithm” (http://www.unicode.org/reports/tr14/). 
  * @param text NSString to encode.
  * @param lineArray NSMutableArray of unique strings.
  * @param lineHash Map of strings to indices.
