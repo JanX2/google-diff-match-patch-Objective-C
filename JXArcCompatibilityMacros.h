@@ -44,7 +44,7 @@ Porting help (pretty crude, could use improvement):
  The above have usual problems with nesting. Don’t use them with “Replace all”!
 */
 
-#if __has_feature(objc_arc)
+#if JX_ENABLE_ARC
 
 #define JX_HAS_ARC 1
 #define JX_RETAIN(_o) (_o)
@@ -69,7 +69,7 @@ Porting help (pretty crude, could use improvement):
 #endif
 
 
-#ifdef __clang__
+#if JX_ENABLE_ARC
 
 #define JX_NEW_AUTORELEASE_POOL_WITH_NAME(_o) @autoreleasepool {
 #define JX_END_AUTORELEASE_POOL_WITH_NAME(_o) }
