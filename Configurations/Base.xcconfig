@@ -1,6 +1,6 @@
 #include "Version.xcconfig"
 
-SDKROOT = macosx10.7
+//SDKROOT = macosx10.7
 MACOSX_DEPLOYMENT_TARGET = 10.6
 PREBINDING = NO
 ARCHS = i386 x86_64
