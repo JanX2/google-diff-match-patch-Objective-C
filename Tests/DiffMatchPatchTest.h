@@ -20,10 +20,10 @@
  * ObjC port: jan@geheimwerk.de (Jan Weiß)
  */
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 
-@interface DiffMatchPatchTest : SenTestCase {
+@interface DiffMatchPatchTest : XCTestCase {
 
 }
 

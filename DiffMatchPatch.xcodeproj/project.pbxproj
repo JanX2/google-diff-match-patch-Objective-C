@@ -66,7 +66,7 @@
 		3D510E1112BEBA44008C7CE7 /* Version.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		3D5BC07E128C44A700B8F5FF /* DiffMatchPatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch.h; sourceTree = "<group>"; };
 		3D5BC07F128C44A700B8F5FF /* DiffMatchPatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiffMatchPatch.m; sourceTree = "<group>"; };
-		3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DiffMatchPatchTest.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DiffMatchPatchTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D5BC0B0128CA8E200B8F5FF /* DiffMatchPatchTest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DiffMatchPatchTest-Info.plist"; sourceTree = "<group>"; };
 		3D5BC0DD128CAAE400B8F5FF /* DiffMatchPatchTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatchTest.h; sourceTree = "<group>"; };
 		3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiffMatchPatchTest.m; sourceTree = "<group>"; };
@@ -132,7 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */,
-				3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.octest */,
+				3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.xctest */,
 				3D96F3A212AFC68900C3E5C0 /* speedtest */,
 				3D03488E135F75460051FE16 /* mode-test */,
 			);
@@ -292,7 +292,6 @@
 				3D5BC0AA128CA8E200B8F5FF /* Resources */,
 				3D5BC0AB128CA8E200B8F5FF /* Sources */,
 				3D5BC0AC128CA8E200B8F5FF /* Frameworks */,
-				3D5BC0AD128CA8E200B8F5FF /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -301,8 +300,8 @@
 			);
 			name = DiffMatchPatchTest;
 			productName = DiffMatchPatchTest;
-			productReference = 3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.octest */;
-			productType = "com.apple.product-type.bundle.ocunit-test";
+			productReference = 3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		3D96F3A112AFC68900C3E5C0 /* speedtest */ = {
 			isa = PBXNativeTarget;
@@ -388,22 +387,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		3D5BC0AD128CA8E200B8F5FF /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3D03488B135F75460051FE16 /* Sources */ = {
@@ -603,7 +586,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_MODEL_TUNING = G5;
@@ -615,11 +598,8 @@
 				OTHER_LDFLAGS = (
 					"-framework",
 					Cocoa,
-					"-framework",
-					SenTestingKit,
 				);
 				PRODUCT_NAME = DiffMatchPatchTest;
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
@@ -630,7 +610,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -640,11 +620,8 @@
 				OTHER_LDFLAGS = (
 					"-framework",
 					Cocoa,
-					"-framework",
-					SenTestingKit,
 				);
 				PRODUCT_NAME = DiffMatchPatchTest;
-				WRAPPER_EXTENSION = octest;
 				ZERO_LINK = NO;
 			};
 			name = Release;
