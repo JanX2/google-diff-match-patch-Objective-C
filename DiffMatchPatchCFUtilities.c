@@ -388,7 +388,7 @@ void diff_mungeHelper(CFStringRef token, CFMutableArrayRef tokenArray, CFMutable
   } else {
     CFArrayAppendValue(tokenArray, token);
     hash = CFArrayGetCount(tokenArray) - 1;
-    check_string(hash <= diff_UniCharMax, "Hash value has exceeded UniCharMax!");
+    __Check_String(hash <= diff_UniCharMax, "Hash value has exceeded UniCharMax!");
     CFDictionaryAddValue(tokenHash, token, (void *)hash);
     const UniChar hashChar = (UniChar)hash;
     CFStringAppendCharacters(chars, &hashChar, 1);
